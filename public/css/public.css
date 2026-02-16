@@ -1,0 +1,178 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* Strip atas seperti SIRANI */
+.top-bar {
+    height: 6px;
+    background: linear-gradient(to right, #1e3a8a, #2563eb);
+}
+
+/* Wrapper */
+.wrapper {
+    flex: 1; /* ini penting */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+
+/* Card */
+.card {
+    width: 100%;
+    max-width: 520px;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 55px 65px;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.08);
+    transition: 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+
+/* Header */
+.card h1 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    color: #1e293b;
+}
+
+.card p {
+    margin: 0 0 35px;
+    font-size: 14px;
+    color: #64748b;
+    text-align: center;
+}
+
+/* Form */
+.form-group {
+    margin-bottom: 28px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #334155;
+}
+
+/* Input */
+.form-control {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    outline: none;
+}
+
+/* Error */
+.input-error {
+    border-color: #dc2626;
+}
+
+.error-message {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #dc2626;
+}
+
+/* Button */
+.btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: #1e3a8a;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.btn:hover {
+    background: #1d4ed8;
+    box-shadow: 0 8px 20px rgba(29, 78, 216, 0.25);
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 12px;
+    color: #94a3b8;
+    border-top: 1px solid #e2e8f0;
+}
+
+.logo-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.logo-header img {
+    height: 70px;
+    margin-bottom: 10px;
+}
+
+.logo-text strong {
+    display: block;
+    font-size: 14px;
+    color: #1e293b;
+}
+
+.logo-text span {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.logo-inside {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.logo-inside img {
+    height: 70px;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .grid-2 {
+        grid-template-columns: 1fr;
+    }
+}
+
+select.form-control {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg fill='%236b7280' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5.5 7l4.5 4 4.5-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 14px;
+    padding-right: 35px;
+}
