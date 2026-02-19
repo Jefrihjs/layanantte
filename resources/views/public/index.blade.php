@@ -51,6 +51,12 @@
                 Lanjutkan
             </button>
 
+            <div class="form-disclaimer">
+                <p>
+                Formulir ini digunakan untuk proses layanan tanda tangan elektronik sebagai bentuk persetujuan dan pengesahan dokumen secara sah.
+                </p>
+            </div>
+
         </form>
 
     </div>

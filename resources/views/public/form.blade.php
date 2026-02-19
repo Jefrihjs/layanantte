@@ -19,6 +19,11 @@
         </div>
 
         <h1>Form Permohonan Layanan TTE</h1>
+        
+            <div class="form-privacy-note">
+                Seluruh informasi yang dikumpulkan akan dijaga kerahasiaannya dan digunakan hanya untuk keperluan administrasi yang sah.
+            </div>
+
 
         <form method="POST" action="{{ route('tte.store') }}">
             @csrf
@@ -110,8 +115,14 @@
             </div>
 
             <button type="submit" class="btn">
-                Simpan Permohonan
+                Kirim Permohonan
             </button>
+
+            <div class="form-disclaimer">
+                <p>
+                    Dengan mengisi dan menandatangani formulir ini, Anda menyatakan bahwa data yang diberikan adalah benar, lengkap, dan dapat dipertanggungjawabkan, serta menyetujui penggunaan tanda tangan elektronik sesuai dengan ketentuan peraturan perundang-undangan yang berlaku.
+                </p>
+            </div>
 
         </form>
 
