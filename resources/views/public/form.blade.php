@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Form Permohonan TTE</title>
     <link rel="stylesheet" href="{{ asset('css/public.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 </head>
 <body>
 
@@ -39,7 +40,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label>NIP (Opsional)</label>
+                    <label>NIP</label>
                     <input type="text" name="nip" class="form-control"
                            value="{{ $last->nip ?? '' }}">
                 </div>
@@ -57,10 +58,29 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Unit Kerja</label>
-                    <input type="text" name="unit_kerja" class="form-control"
-                           value="{{ $last->unit_kerja ?? '' }}" required>
+                    <label>Kategori Unit</label>
+                    <select id="kategoriSelect" class="form-control">
+                        <option value="">-- Pilih Kategori --</option>
+                        <option value="pemerintahan">Pemerintahan</option>
+                        <option value="sekolah">Sekolah</option>
+                        <option value="desa">Desa</option>
+                    </select>
                 </div>
+
+                <div class="form-group full-width">
+                    <label>Unit Kerja</label>
+                    <select name="unit_kerja" id="unitKerjaSelect" class="form-control" required>
+                        <option value="">-- Pilih Unit Kerja --</option>
+                        @foreach($unitKerjas as $unit)
+                            <option 
+                                value="{{ $unit->nama }}"
+                                data-kategori="{{ $unit->kategori }}">
+                                {{ $unit->nama }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
 
             </div>
 
@@ -102,6 +122,39 @@
 <div class="footer">
     © {{ date('Y') }} Pemerintah Kabupaten Belitung Timur
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+<script>
+$(document).ready(function() {
+
+    let allOptions = $('#unitKerjaSelect option').clone();
+
+    $('#unitKerjaSelect').select2({
+        placeholder: "Cari Unit Kerja",
+        width: '100%'
+    });
+
+    $('#kategoriSelect').on('change', function() {
+
+        let kategori = $(this).val();
+
+        $('#unitKerjaSelect').empty();
+
+        $('#unitKerjaSelect').append('<option value="">-- Pilih Unit Kerja --</option>');
+
+        allOptions.each(function() {
+            let optKategori = $(this).data('kategori');
+
+            if (optKategori == kategori) {
+                $('#unitKerjaSelect').append($(this).clone());
+            }
+        });
+
+        $('#unitKerjaSelect').val('').trigger('change');
+    });
+
+});
+</script>
 </body>
 </html>

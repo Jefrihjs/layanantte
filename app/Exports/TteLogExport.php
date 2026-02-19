@@ -8,10 +8,20 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Maatwebsite\Excel\Events\AfterSheet;
 
-class TteLogExport implements FromCollection, WithHeadings, WithStyles, WithEvents, ShouldAutoSize
+class TteLogExport implements
+    FromCollection,
+    WithHeadings,
+    WithStyles,
+    WithEvents,
+    ShouldAutoSize,
+    WithMapping,
+    WithColumnFormatting
 {
     protected $start;
     protected $end;
@@ -33,20 +43,31 @@ class TteLogExport implements FromCollection, WithHeadings, WithStyles, WithEven
             ]);
         }
 
-        $logs = $query->orderBy('tanggal', 'asc')->get();
-
-        return $logs->values()->map(function ($log, $index) {
-            return [
-                $index + 1,
-                $log->tanggal->format('d-m-Y'),
-                $log->nama,
-                $log->jenis_permohonan === 'reset_passphrase'
-                    ? 'Reset Passphrase'
-                    : 'Perpanjangan Sertifikat',
-                $log->keterangan,
-            ];
-        });
+        return $query->orderBy('tanggal', 'asc')->get();
     }
+
+    public function map($log): array
+    {
+        static $no = 1;
+
+        $jenis = match ($log->jenis_permohonan) {
+            'reset_passphrase' => 'Reset Passphrase',
+            'perpanjangan'     => 'Perpanjangan Sertifikat',
+            'baru'             => 'Pendaftaran Baru',
+            default            => $log->jenis_permohonan,
+        };
+
+        return [
+            $no++,
+            $log->tanggal->format('d-m-Y'),
+            $log->nama,
+            "'" . $log->nik,      // ← INI FIX FINAL
+            $log->unit_kerja,
+            $jenis,
+            $log->keterangan,
+        ];
+    }
+
 
     public function headings(): array
     {
@@ -54,15 +75,24 @@ class TteLogExport implements FromCollection, WithHeadings, WithStyles, WithEven
             'No',
             'Tanggal',
             'Nama',
+            'NIK',
+            'Unit Kerja',
             'Jenis Permohonan',
             'Keterangan',
+        ];
+    }
+
+    public function columnFormats(): array
+    {
+        return [
+            'D' => NumberFormat::FORMAT_TEXT, // Kolom NIK dipaksa TEXT
         ];
     }
 
     public function styles(Worksheet $sheet)
     {
         return [
-            1 => ['font' => ['bold' => true]],
+            3 => ['font' => ['bold' => true]],
         ];
     }
 
@@ -71,29 +101,41 @@ class TteLogExport implements FromCollection, WithHeadings, WithStyles, WithEven
         return [
             AfterSheet::class => function (AfterSheet $event) {
 
-                // Judul laporan
+                // Tambah 2 baris untuk judul
                 $event->sheet->insertNewRowBefore(1, 2);
+
                 $event->sheet->setCellValue('A1', 'LAPORAN PERMOHONAN LAYANAN TTE');
 
                 if ($this->start && $this->end) {
-                    $event->sheet->setCellValue('A2', 
-                        'Periode: ' . date('d-m-Y', strtotime($this->start)) .
-                        ' s/d ' . date('d-m-Y', strtotime($this->end))
+                    $event->sheet->setCellValue(
+                        'A2',
+                        'Periode: ' .
+                        date('d-m-Y', strtotime($this->start)) .
+                        ' s/d ' .
+                        date('d-m-Y', strtotime($this->end))
                     );
                 } else {
                     $event->sheet->setCellValue('A2', 'Semua Data');
                 }
 
-                // Merge judul
-                $event->sheet->mergeCells('A1:E1');
-                $event->sheet->mergeCells('A2:E2');
+                // Merge cell sesuai jumlah kolom (A–G)
+                $event->sheet->mergeCells('A1:G1');
+                $event->sheet->mergeCells('A2:G2');
 
-                // Bold judul
+                // Bold + center judul
                 $event->sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
+                $event->sheet->getStyle('A1:G2')
+                    ->getAlignment()
+                    ->setHorizontal('center');
 
                 // Center kolom No & Tanggal
-                $event->sheet->getStyle('A:A')->getAlignment()->setHorizontal('center');
-                $event->sheet->getStyle('B:B')->getAlignment()->setHorizontal('center');
+                $event->sheet->getStyle('A:A')
+                    ->getAlignment()
+                    ->setHorizontal('center');
+
+                $event->sheet->getStyle('B:B')
+                    ->getAlignment()
+                    ->setHorizontal('center');
             },
         ];
     }

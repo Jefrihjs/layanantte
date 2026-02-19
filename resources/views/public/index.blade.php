@@ -16,8 +16,16 @@
         <div class="logo-inside">
             <img src="{{ asset('img/logo-beltim.png') }}" alt="Logo Beltim">
         </div>
+
         <h1>Layanan Permohonan TTE</h1>
         <p>Silakan masukkan NIK untuk melanjutkan permohonan</p>
+
+        {{-- ✅ ALERT SUKSES --}}
+        @if(session()->has('success'))
+            <div class="alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
 
         <form method="POST" action="{{ route('tte.check') }}">
             @csrf
@@ -31,6 +39,7 @@
                        class="form-control @error('nik') input-error @enderror"
                        value="{{ old('nik') }}"
                        required>
+
                 @error('nik')
                     <div class="error-message">
                         {{ $message }}

@@ -2,11 +2,15 @@
    ADMIN AVATAR
 ================================= */
 .admin-avatar {
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
+    background: #e2e8f0;
     border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid rgba(255,255,255,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #1e3a8a;
 }
 
 .admin-avatar-text {
@@ -28,22 +32,26 @@
 .admin-container,
 .admin-wrapper {
     max-width: 1100px;
-    margin: 40px auto;
-    padding: 0 20px;
+    margin: 10px auto;
+    padding: 0 10px;
 }
 
 /* ===============================
    HEADER
 ================================= */
 .admin-header {
-    background: #1e3a8a;
-    height: 60px;
+    background: linear-gradient(90deg, #264981 0%, #032758 100%);
+    height: 65px; /* Sedikit lebih tinggi agar lega */
     padding: 0 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: white;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-bottom: none;
+    position: sticky; /* Tetap di atas saat scroll */
+    top: 0;
+    z-index: 1000;
 }
 
 .admin-header h2 {
@@ -63,8 +71,9 @@
 
 .header-title {
     font-size: 16px;
-    font-weight: 600;
-    letter-spacing: 0.3px;
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1); /* Tambahkan shadow tipis pada teks */
 }
 
 .header-right,
@@ -81,8 +90,9 @@
 }
 
 .admin-name {
-    font-size: 14px;
-    opacity: 0.9;
+font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9); /* Putih agak transparan agar lebih elegan */
 }
 
 /* ===============================
@@ -161,15 +171,25 @@
    BADGES
 ================================= */
 .badge {
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    padding: 6px 14px;
+    border-radius: 999px;
+
+    font-size: 13px;
+    font-weight: 500;
+    color: #fff;
+
+    line-height: 1.2;
+    min-height: 32px;
 }
 
 .badge.baru {
-    background: #0ea5e9;
-    color: white;
+    background: rgba(37,99,235,0.15);
+    color: #2563eb;
 }
 
 .badge-diproses,
@@ -182,34 +202,21 @@
     background: #facc15;
 }
 
-.badge-reset {
-    background: #fee2e2;
-    color: #991b1b;
+.badge.reset {
+    background: rgba(245,158,11,0.15);
+    color: #f59e0b;
 }
 
-.badge-perpanjang {
-    background: #fef3c7;
-    color: #92400e;
+.badge.perpanjangan {
+    background: rgba(22,163,74,0.15);
+    color: #16a34a;
 }
 
-/* ===============================
-   DASHBOARD HEADER
-================================= */
-.dashboard-header {
-    background: linear-gradient(135deg, #1e3a8a, #2563eb);
-    border-radius: 18px;
-    padding: 30px;
-    color: white;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-}
 
-.dashboard-title {
-    font-size: 32px;
-    font-weight: 700;
-}
+
 
 /* ===============================
-   STATS
+    STATS
 ================================= */
 .stats-grid {
     display: grid;
@@ -218,17 +225,64 @@
     margin-bottom: 30px;
 }
 
-
 .stat-card {
-    background: white;
-    border-radius: 16px;
-    padding: 25px;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.05);
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 20px;
     transition: 0.2s ease;
+    border-left: 6px solid transparent; 
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
 }
 
+.stat-card.baru.active {
+    box-shadow: 0 0 0 2px #2563eb;
+}
+
+.stat-card.reset.active {
+    box-shadow: 0 0 0 2px #f59e0b;
+}
+
+.stat-card.perpanjangan.active {
+    box-shadow: 0 0 0 2px #16a34a;
+}
+
+.stat-card.total.active {
+    box-shadow: 0 0 0 2px #64748b;
+}
+
+
 .stat-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-5px);
+}
+
+/* strip kiri */
+.stat-card::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 8px;
+    border-radius: 14px 0 0 14px;
+}
+
+/* warna beda */
+.stat-card.total {
+    border-left-color: #64748b;
+}
+
+.stat-card.baru {
+    border-left-color: #2563eb;
+}
+
+.stat-card.reset {
+    border-left-color: #f59e0b;
+}
+
+.stat-card.perpanjangan {
+    border-left-color: #16a34a;
 }
 
 .stat-title,
@@ -244,9 +298,94 @@
     font-weight: 700;
 }
 
+.stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-icon svg {
+    width: 30px;
+    height: 30px;
+    stroke: currentColor; /* Ini kuncinya agar warna otomatis sinkron */
+    fill: none;
+}
+
+.stat-card.total .stat-icon {
+    background: rgba(100, 116, 139, 0.1); /* Abu-abu transparan */
+    color: #64748b;
+}
+
+.stat-card.baru .stat-icon {
+    background: rgba(37, 99, 235, 0.1); /* Biru transparan */
+    color: #2563eb;
+}
+
+.stat-card.reset .stat-icon {
+    background: rgba(245, 158, 11, 0.1); /* Oranye transparan */
+    color: #f59e0b;
+}
+
+.stat-card.perpanjangan .stat-icon {
+    background: rgba(22, 163, 74, 0.1); /* Hijau transparan */
+    color: #16a34a;
+}
+
 /* ===============================
    TABLE
 ================================= */
+.table-title {
+    margin-bottom: 15px;
+}
+
+.table-main-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.table-sub-title {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.filter-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 12px;
+    margin-left: 6px;
+}
+
+.filter-badge.biru {
+    background: #2563eb;
+    color: #fff;
+}
+
+.filter-badge.orange {
+    background: #f59e0b;
+    color: #fff;
+}
+
+.filter-badge.hijau {
+    background: #16a34a;
+    color: #fff;
+}
+
+.filter-badge.abu {
+    background: #64748b;
+    color: #fff;
+}
+
 .table-card {
     background: white;
     border-radius: 16px;
@@ -256,7 +395,12 @@
 
 table {
     width: 100%;
+    min-width: 900px;
     border-collapse: collapse;
+}
+
+.table-wrapper {
+    overflow-x: auto;
 }
 
 thead {
@@ -302,6 +446,93 @@ tbody tr:hover {
     background: #f8fafc;
 }
 
+.table-header-row {
+    padding: 20px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.header-left-group {
+    display: flex; /* Kunci agar tidak menumpuk ke bawah */
+    align-items: center; /* Menyejajarkan posisi tengah secara vertikal */
+    gap: 15px; /* Memberi jarak antar elemen */
+}
+
+.table-main-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+    color: #1e293b;
+}
+
+.header-divider {
+    width: 2px;
+    height: 20px;
+    background: #e2e8f0;
+}
+
+.select-triwulan-inline {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 13px;
+    background: #f8fafc;
+    cursor: pointer;
+}
+
+.filter-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap; /* Agar teks badge tidak terpotong jadi 2 baris */
+}
+
+.table-header-flex {
+    display: flex;
+    justify-content: space-between; /* KUNCI: Kiri & Kanan kepisah */
+    align-items: center;
+    padding: 20px;
+    background: #ffffff;
+    border-bottom: 1px solid #f1f5f9;
+    border-radius: 14px 14px 0 0;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-divider {
+    width: 1px;
+    height: 20px;
+    background: #e2e8f0;
+}
+
+.table-main-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+}
+
+/* CSS Dropdown di Kanan */
+.select-triwulan-inline {
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 13px;
+    background: #f8fafc;
+    color: #475569;
+    outline: none;
+}
+
+.filter-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+}
 /* ===============================
    FILTERS & SELECT
 ================================= */
@@ -342,7 +573,7 @@ tbody tr:hover {
 }
 
 .btn-export {
-    height: 38px;
+    height: 20px;
     display: flex;
     align-items: center;
 }
@@ -354,7 +585,7 @@ tbody tr:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    margin-bottom: 10px;
 }
 
 .page-title {
@@ -375,8 +606,68 @@ tbody tr:hover {
 }
 
 .chart-card {
-    padding: 30px;
-    border-radius: 16px;
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 20px;
+    margin-top: -5px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.chart-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.chart-body {
+    max-width: 250px;
+    margin: 0 auto;
+}
+
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.modal-box.large {
     background: white;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.05);
+    width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.35);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-close {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: none;
+    background: #f1f5f9;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    background: #e2e8f0;
+    transform: rotate(90deg);
 }

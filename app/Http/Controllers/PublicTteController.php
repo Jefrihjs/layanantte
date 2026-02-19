@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\TteLog;
-use Carbon\Carbon;
+use App\Models\UnitKerja;
+use Illuminate\Validation\Rule;
 
 class PublicTteController extends Controller
 {
@@ -14,6 +15,9 @@ class PublicTteController extends Controller
         return view('public.index');
     }
 
+    // ===============================
+    // VALIDASI STRUKTUR NIK
+    // ===============================
     private function validNik($nik)
     {
         // Harus 16 digit angka
@@ -49,7 +53,6 @@ class PublicTteController extends Controller
 
         // Validasi nomor urut (digit 13–16)
         $urut = (int) substr($nik, 12, 4);
-
         if ($urut < 1 || $urut > 100) {
             return false;
         }
@@ -57,9 +60,9 @@ class PublicTteController extends Controller
         return true;
     }
 
-
-
-    // Cek NIK & tampilkan form
+    // ===============================
+    // CEK NIK & TAMPILKAN FORM
+    // ===============================
     public function checkNik(Request $request)
     {
         $request->validate([
@@ -72,31 +75,76 @@ class PublicTteController extends Controller
             ]);
         }
 
-        // Ambil riwayat terakhir jika ada
         $last = TteLog::where('nik', $request->nik)
             ->orderBy('created_at', 'desc')
             ->first();
 
+        $unitKerjas = UnitKerja::orderBy('nama')->get();
+
         return view('public.form', [
-            'nik'  => $request->nik,
-            'last' => $last
+            'nik' => $request->nik,
+            'last' => $last,
+            'unitKerjas' => $unitKerjas
         ]);
     }
 
-
-
-    // Simpan permohonan
+    // ===============================
+    // SIMPAN PERMOHONAN
+    // ===============================
     public function store(Request $request)
     {
         $request->validate([
             'tanggal' => 'required|date',
-            'nama' => 'required|string',
-            'nik' => 'required|digits:16',
-            'jabatan' => 'required|string',
-            'unit_kerja' => 'required|string',
-            'no_hp' => 'required|string',
+            'nama' => 'required|string|max:100',
+
+            // NIK 16 digit angka
+            'nik' => ['required','regex:/^[0-9]{16}$/'],
+
+            // VALIDASI NIP (rapi tapi tidak ribet)
+            'nip' => [
+                'nullable',
+                'digits:18',
+                function ($attribute, $value, $fail) {
+
+                    // Validasi tanggal lahir (YYYYMMDD)
+                    $tgl = substr($value, 0, 8);
+                    $tahun = substr($tgl, 0, 4);
+                    $bulan = substr($tgl, 4, 2);
+                    $hari  = substr($tgl, 6, 2);
+
+                    if (!checkdate((int)$bulan, (int)$hari, (int)$tahun)) {
+                        $fail('Format tanggal lahir pada NIP tidak valid.');
+                    }
+
+                    // Validasi TMT (YYYYMM)
+                    $tmt = substr($value, 8, 6);
+                    $tahunTmt = substr($tmt, 0, 4);
+                    $bulanTmt = substr($tmt, 4, 2);
+
+                    if ($bulanTmt < 1 || $bulanTmt > 12) {
+                        $fail('Format TMT pada NIP tidak valid.');
+                    }
+
+                    // TMT tidak boleh lebih kecil dari tahun lahir
+                    if ((int)$tahunTmt < (int)$tahun) {
+                        $fail('TMT tidak logis dibanding tahun lahir.');
+                    }
+                }
+            ],
+
+            'jabatan' => 'required|string|max:100',
+
+            // Unit kerja harus ada di database
+            'unit_kerja' => [
+                'required',
+                Rule::exists('unit_kerjas', 'nama')
+            ],
+
+            // Nomor HP harus mulai 08 dan 10–13 digit
+            'no_hp' => ['required','regex:/^08[0-9]{8,11}$/'],
+
             'jenis_permohonan' => 'required|in:baru,reset_passphrase,perpanjangan',
-            'keterangan' => 'required|string',
+            'keterangan' => 'required|string|max:500',
         ]);
 
         TteLog::create([
@@ -112,6 +160,6 @@ class PublicTteController extends Controller
         ]);
 
         return redirect()->route('tte.index')
-            ->with('success', 'Permohonan berhasil dicatat.');
+            ->with('success', 'Permohonan Anda telah berhasil dikirim. Mohon menunggu proses verifikasi dari Tim Verifikator TTE.');
     }
 }

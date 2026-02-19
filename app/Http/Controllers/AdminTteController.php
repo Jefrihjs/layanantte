@@ -48,7 +48,12 @@ class AdminTteController extends Controller
             $query->whereBetween('tanggal', [$start, $end]);
         }
 
-        $logs = $query->orderBy('tanggal', 'desc')->paginate(10);
+        if ($request->filled('jenis')) {
+            $query->where('jenis_permohonan', $request->jenis);
+        }
+        $logs = $query->orderBy('tanggal', 'desc')
+              ->paginate(10)
+              ->withQueryString();
 
         // Statistik (selalu berdasarkan tahun terpilih)
         $totalTahun = TteLog::whereYear('tanggal', $year)->count();
@@ -77,17 +82,9 @@ class AdminTteController extends Controller
 
     public function show($id)
     {
-        $log = \App\Models\TteLog::findOrFail($id);
+        $log = TteLog::with('admin')->findOrFail($id);
 
-        // Jika belum diproses, catat admin yang membuka
-        if (!$log->diproses_oleh) {
-            $log->update([
-                'diproses_oleh' => auth()->id(),
-                'diproses_pada' => now()
-            ]);
-        }
-
-        return view('admin.show', compact('log'));
+        return view('admin.permohonan._detail', compact('log'));
     }
 
     public function proses($id)
