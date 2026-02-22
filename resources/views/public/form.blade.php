@@ -25,7 +25,7 @@
             </div>
 
 
-        <form method="POST" action="{{ route('tte.store') }}">
+        <form method="POST" action="{{ route('layanan.store') }}">
             @csrf
 
             <input type="hidden" name="tanggal" value="{{ now()->format('Y-m-d') }}">

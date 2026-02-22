@@ -27,7 +27,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('tte.check') }}">
+        <form method="POST" action="{{ route('layanan.check') }}">
             @csrf
 
             <div class="form-group">

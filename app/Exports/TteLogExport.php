@@ -23,27 +23,18 @@ class TteLogExport implements
     WithMapping,
     WithColumnFormatting
 {
-    protected $start;
-    protected $end;
+ protected $data;
+ protected $periodeText;
 
-    public function __construct($start = null, $end = null)
+    public function __construct($data, $periodeText)
     {
-        $this->start = $start;
-        $this->end = $end;
+        $this->data = $data;
+        $this->periodeText = $periodeText;
     }
 
     public function collection()
     {
-        $query = TteLog::query();
-
-        if ($this->start && $this->end) {
-            $query->whereBetween('tanggal', [
-                $this->start,
-                $this->end
-            ]);
-        }
-
-        return $query->orderBy('tanggal', 'asc')->get();
+        return $this->data;
     }
 
     public function map($log): array
@@ -92,7 +83,7 @@ class TteLogExport implements
     public function styles(Worksheet $sheet)
     {
         return [
-            3 => ['font' => ['bold' => true]],
+            1 => ['font' => ['bold' => true]],
         ];
     }
 
@@ -105,18 +96,7 @@ class TteLogExport implements
                 $event->sheet->insertNewRowBefore(1, 2);
 
                 $event->sheet->setCellValue('A1', 'LAPORAN PERMOHONAN LAYANAN TTE');
-
-                if ($this->start && $this->end) {
-                    $event->sheet->setCellValue(
-                        'A2',
-                        'Periode: ' .
-                        date('d-m-Y', strtotime($this->start)) .
-                        ' s/d ' .
-                        date('d-m-Y', strtotime($this->end))
-                    );
-                } else {
-                    $event->sheet->setCellValue('A2', 'Semua Data');
-                }
+                $event->sheet->setCellValue('A2', $this->periodeText);
 
                 // Merge cell sesuai jumlah kolom (A–G)
                 $event->sheet->mergeCells('A1:G1');
