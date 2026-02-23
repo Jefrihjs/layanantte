@@ -60,13 +60,16 @@
         </table>
 
         @if($log->status == 'pending')
-            <form method="POST" action="{{ route('admin.permohonan.proses', $log->id) }}">
-                @csrf
-                <button type="submit" class="btn-proses">
-                    Proses Permohonan
-                </button>
-            </form>
+            <div style="margin-top:20px; text-align:right;">
+                <form method="POST" action="{{ route('permohonan.proses', $log->id) }}">
+                    @csrf
+                    <button type="submit" class="btn-proses">
+                        Proses Permohonan
+                    </button>
+                </form>
+            </div>
         @endif
+
 
     </div>
 </div>

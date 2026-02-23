@@ -27,7 +27,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route('tte.check') }}">
+        <form method="POST" action="{{ route('layanan.check') }}">
             @csrf
 
             <div class="form-group">
@@ -50,6 +50,12 @@
             <button type="submit" class="btn">
                 Lanjutkan
             </button>
+
+            <div class="form-disclaimer">
+                <p>
+                Formulir ini digunakan untuk proses layanan tanda tangan elektronik sebagai bentuk persetujuan dan pengesahan dokumen secara sah.
+                </p>
+            </div>
 
         </form>
 

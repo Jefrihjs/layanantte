@@ -4,12 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminTteController;
 use App\Http\Controllers\PublicTteController;
-
-/*
-|--------------------------------------------------------------------------
-| WEB ROUTES
-|--------------------------------------------------------------------------
-*/
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PermohonanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,26 +14,17 @@ use App\Http\Controllers\PublicTteController;
 */
 
 Route::get('/', function () {
-    return redirect()->route('tte.index');
+    return redirect('/layanan');
 });
 
-// Halaman input NIK
-Route::get('/permohonan', [PublicTteController::class, 'index'])
-    ->name('tte.index');
+Route::get('/layanan', [PublicTteController::class, 'index'])
+    ->name('layanan.index');
 
-// Redirect jika ada yang buka /check-nik via GET (hindari 419)
-Route::get('/check-nik', function () {
-    return redirect()->route('tte.index');
-});
+Route::post('/layanan/check', [PublicTteController::class, 'checkNik'])
+    ->name('layanan.check');
 
-// Proses cek NIK (POST only)
-Route::post('/check-nik', [PublicTteController::class, 'checkNik'])
-    ->name('tte.check');
-
-// Simpan permohonan
-Route::post('/store', [PublicTteController::class, 'store'])
-    ->name('tte.store');
-
+Route::post('/layanan/store', [PublicTteController::class, 'store'])
+    ->name('layanan.store');
 
 /*
 |--------------------------------------------------------------------------
@@ -45,27 +32,51 @@ Route::post('/store', [PublicTteController::class, 'store'])
 |--------------------------------------------------------------------------
 */
 
-Route::get('/dashboard', function () {
-    return redirect()->route('admin.permohonan');
-})->middleware(['auth'])->name('dashboard');
+Route::prefix('admin')
+    ->middleware(['auth'])
+    ->group(function () {
 
-Route::middleware(['auth'])->group(function () {
+    /*
+    |--------------------------------------------------------------------------
+    | DASHBOARD (Monitoring Only)
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
 
-    Route::get('/admin', [AdminTteController::class, 'index'])
-    ->name('admin.dashboard');
 
-    Route::get('/admin/permohonan', [AdminTteController::class, 'index'])
-        ->name('admin.permohonan');
+    /*
+    |--------------------------------------------------------------------------
+    | DATA PERMOHONAN (Operasional)
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/permohonan', [PermohonanController::class, 'index'])
+        ->name('permohonan.index');
 
-    Route::get('/admin/permohonan/export', [AdminTteController::class, 'export'])
-        ->name('admin.permohonan.export');
+    Route::get('/permohonan/export', [AdminTteController::class, 'export'])
+        ->name('permohonan.export');
 
-    Route::get('/admin/permohonan/{id}', [AdminTteController::class, 'show'])
-        ->name('admin.permohonan.show');
+    Route::get('/permohonan/{id}', [AdminTteController::class, 'show'])
+        ->name('permohonan.show');
 
-    Route::post('/admin/permohonan/{id}/proses', [AdminTteController::class, 'proses'])
-        ->name('admin.permohonan.proses');
+    Route::post('/permohonan/{id}/proses', [AdminTteController::class, 'proses'])
+        ->name('permohonan.proses');
 
+
+    /*
+    |--------------------------------------------------------------------------
+    | IMPORT (Opsional)
+    |--------------------------------------------------------------------------
+    */
+    Route::post('/permohonan/import', [AdminTteController::class, 'import'])
+        ->name('permohonan.import');
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PROFILE
+    |--------------------------------------------------------------------------
+    */
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');
 

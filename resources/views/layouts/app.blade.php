@@ -1,48 +1,95 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
- <div class="admin-header">
-
-    <div class="header-left">
-        <img src="{{ asset('img/logo-beltim.png') }}" class="header-logo">
-        <span class="header-title">Verifikator TTE</span>
-    </div>
-
-    <div class="header-right">
-
-        <div class="admin-info">
-            <div class="admin-avatar-text">
-    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-</div>
-
-            <span class="admin-name">
-                {{ auth()->user()->name }}
-            </span>
-        </div>
-
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-           <button type="submit" class="logout-icon" title="Logout">
-                <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path d="M17.2929 14.2929C16.9024 14.6834 16.9024 15.3166 17.2929 15.7071C17.6834 16.0976 18.3166 16.0976 18.7071 15.7071L21.6201 12.7941C21.6351 12.7791 21.6497 12.7637 21.6637 12.748C21.87 12.5648 22 12.2976 22 12C22 11.7024 21.87 11.4352 21.6637 11.252C21.6497 11.2363 21.6351 11.2209 21.6201 11.2059L18.7071 8.29289C18.3166 7.90237 17.6834 7.90237 17.2929 8.29289C16.9024 8.68342 16.9024 9.31658 17.2929 9.70711L18.5858 11H13C12.4477 11 12 11.4477 12 12C12 12.5523 12.4477 13 13 13H18.5858L17.2929 14.2929Z" fill="#ffffff"/>
-                <path d="M5 2C3.34315 2 2 3.34315 2 5V19C2 20.6569 3.34315 22 5 22H14.5C15.8807 22 17 20.8807 17 19.5V16.7326C16.8519 16.647 16.7125 16.5409 16.5858 16.4142C15.9314 15.7598 15.8253 14.7649 16.2674 14H13C11.8954 14 11 13.1046 11 12C11 10.8954 11.8954 10 13 10H16.2674C15.8253 9.23514 15.9314 8.24015 16.5858 7.58579C16.7125 7.4591 16.8519 7.35296 17 7.26738V4.5C17 3.11929 15.8807 2 14.5 2H5Z" fill="#ffffff"/>
-                </svg>
-            </button>
-        </form>
-
-    </div>
-
-
-
-</div>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifikator TTE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
 
 </head>
-<body style="background:#f1f5f9; margin:0; font-family:system-ui, sans-serif;">
+
+<body>
+
+    {{-- HEADER --}}
+    <div class="admin-header">
+
+        <div class="header-left">
+            <img src="{{ asset('img/logo-beltim.png') }}" class="header-logo">
+            <span class="header-title">Verifikator TTE</span>
+        </div>
+
+        {{-- TOGGLE BUTTON (MOBILE ONLY) --}}
+        <button class="nav-toggle" id="navToggleBtn">
+            ☰
+        </button>
+         
+        {{-- NAV MENU --}}
+        <nav class="admin-nav">
+            <a href="{{ route('dashboard') }}"
+                class="{{ request()->routeIs('dashboard') ? 'nav-active' : '' }}">
+                Dashboard
+            </a>
+
+            <a href="{{ route('permohonan.index') }}"
+                class="{{ request()->routeIs('permohonan.*') ? 'nav-active' : '' }}">
+                Data Permohonan
+            </a>
+        </nav>
+
+        <div class="header-right">
+            <div class="admin-info">
+                <div class="admin-avatar-text">
+                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                </div>
+                <span>{{ auth()->user()->name }}</span>
+            </div>
+
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="logout-icon" title="Logout">
+                    Logout
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+    {{-- GLOBAL MODAL --}}
+    <div id="detailModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Detail Permohonan</h3>
+                <button onclick="closeModal()">×</button>
+            </div>
+            <div id="modalBody">
+                Loading...
+            </div>
+        </div>
+    </div>
 
 
-    <div style="padding:30px;">
+    {{-- CONTENT --}}
+    <div class="content-wrapper">
         @yield('content')
     </div>
 
+    {{-- CHART JS --}}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const navBtn = document.getElementById('navToggleBtn');
+        const navMenu = document.querySelector('.admin-nav')
+
+        if (navBtn && navMenu) {
+            navBtn.addEventListener('click', function () {
+                navMenu.classList.toggle('active');
+            });
+        }
+
+    });
+    </script>
 </body>
 </html>
