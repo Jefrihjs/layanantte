@@ -4,10 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminTteController;
 use App\Http\Controllers\PublicTteController;
-<<<<<<< Updated upstream
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PermohonanController;
-=======
 use App\Http\Controllers\UserController;
 
 /*
@@ -15,7 +13,7 @@ use App\Http\Controllers\UserController;
 | WEB ROUTES
 |--------------------------------------------------------------------------
 */
->>>>>>> Stashed changes
+
 
 /*
 |--------------------------------------------------------------------------
@@ -53,6 +51,11 @@ Route::prefix('admin')
     */
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
+
+
+    Route::resource('users', UserController::class);
+    Route::get('/admin', [AdminTteController::class, 'index'])
+    ->name('admin.dashboard');
 
     /*
     |--------------------------------------------------------------------------

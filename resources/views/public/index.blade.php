@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta charset="UTF-8">
     <title>Layanan Permohonan TTE</title>
     <link rel="stylesheet" href="{{ asset('css/public.css') }}">
