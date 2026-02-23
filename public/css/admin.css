@@ -525,6 +525,27 @@ font-size: 14px;
 /* ======================
    PAGE PERMOHONAN
 ====================== */
+.btn-detail,
+.btn-icon-delete {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #2563eb;
+    display: flex;
+    align-items: center;
+}
+
+.btn-detail:hover {
+    color: #1d4ed8;
+}
+
+.btn-icon-delete {
+    color: #dc2626;
+}
+
+.btn-icon-delete:hover {
+    color: #b91c1c;
+}
 
 .page-container {
     max-width: 1200px;

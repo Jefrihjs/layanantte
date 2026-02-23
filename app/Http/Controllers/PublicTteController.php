@@ -148,7 +148,7 @@ class PublicTteController extends Controller
         ]);
 
         TteLog::create([
-            'tanggal' => $request->tanggal,
+            'tanggal' => now(),
             'nama' => $request->nama,
             'nik' => $request->nik,
             'nip' => $request->nip,

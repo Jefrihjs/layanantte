@@ -94,10 +94,22 @@ class AdminTteController extends Controller
 
     public function show($id)
     {
-        $log = \App\Models\TteLog::findOrFail($id);
+        $log = \App\Models\TteLog::with('admin')->findOrFail($id);
+
+        if (!request()->ajax()) {
+            return redirect()->route('permohonan.index');
+        }
 
         return view('admin.permohonan._detail', compact('log'));
     }
+
+    public function detail($id)
+    {
+        $log = \App\Models\TteLog::with('admin')->findOrFail($id);
+
+        return view('admin.permohonan._detail', compact('log'));
+    }
+
     public function proses($id)
     {
         $log = \App\Models\TteLog::findOrFail($id);
@@ -113,6 +125,17 @@ class AdminTteController extends Controller
         return redirect()
             ->route('permohonan.show', $id)
             ->with('success', 'Permohonan sedang diproses.');
+    }
+
+    public function destroy($id)
+    {
+        $log = \App\Models\TteLog::findOrFail($id);
+
+        $log->delete();
+
+        return redirect()
+            ->route('permohonan.index')
+            ->with('success', 'Data permohonan berhasil dihapus.');
     }
 
     public function export(Request $request)

@@ -56,6 +56,7 @@ Route::prefix('admin')
     Route::resource('users', UserController::class);
     Route::get('/admin', [AdminTteController::class, 'index'])
     ->name('admin.dashboard');
+    
 
     /*
     |--------------------------------------------------------------------------
@@ -71,9 +72,14 @@ Route::prefix('admin')
     Route::get('/permohonan/{id}', [AdminTteController::class, 'show'])
         ->name('permohonan.show');
 
+    Route::get('/permohonan/{id}/detail', [AdminTteController::class, 'detail'])
+    ->name('permohonan.detail');
+
     Route::post('/permohonan/{id}/proses', [AdminTteController::class, 'proses'])
         ->name('permohonan.proses');
 
+    Route::delete('/permohonan/{id}', [AdminTteController::class, 'destroy'])
+    ->name('permohonan.destroy');
 
     /*
     |--------------------------------------------------------------------------

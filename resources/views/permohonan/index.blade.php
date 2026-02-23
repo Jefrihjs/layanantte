@@ -73,7 +73,7 @@
             <tbody>
                 @forelse($data as $item)
                     <tr>
-                        <td>{{ $item->tanggal }}</td>
+                        <td>{{ $item->tanggal->format('d-m-Y H:i') }}</td>
                         <td>{{ $item->nama }}</td>
                         <td>{{ $item->nik }}</td>
                         <td>
@@ -90,12 +90,60 @@
                                 {{ $item->status ?? 'pending' }}
                             </span>
                         </td>
-                        <td>
+                        <td style="display:flex; gap:10px; align-items:center;">
+
+                            {{-- Detail --}}
                             <a href="javascript:void(0)"
                                 class="btn-detail"
-                                onclick="showDetail('{{ route('permohonan.show', ':id') }}'.replace(':id', {{ $item->id }}))">
-                                Detail
+                                title="Detail"
+                                onclick="showDetail('{{ route('permohonan.detail', ':id') }}'.replace(':id', {{ $item->id }}))">
+
+                                <!-- Icon Eye -->
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
                             </a>
+
+                            {{-- Hapus --}}
+                            <form action="{{ route('permohonan.destroy', $item->id) }}"
+                                method="POST"
+                                onsubmit="return confirm('Yakin ingin menghapus data ini?')"
+                                style="display:inline;">
+                                @csrf
+                                @method('DELETE')
+
+                                <button type="submit"
+                                        class="btn-icon-delete"
+                                        title="Hapus">
+
+                                    <!-- Icon Trash -->
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        width="18"
+                                        height="18"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="1.8"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <polyline points="3 6 5 6 21 6"/>
+                                        <path d="M19 6l-1 14H6L5 6"/>
+                                        <path d="M10 11v6"/>
+                                        <path d="M14 11v6"/>
+                                        <path d="M9 6V4h6v2"/>
+                                    </svg>
+                                </button>
+                            </form>
+
                         </td>
                     </tr>
                 @empty
