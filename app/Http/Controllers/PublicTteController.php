@@ -159,7 +159,7 @@ class PublicTteController extends Controller
             'keterangan' => $request->keterangan,
         ]);
 
-        return redirect()->route('tte.index')
+        return redirect()->route('layanan.index')
             ->with('success', 'Permohonan Anda telah berhasil dikirim. Mohon menunggu proses verifikasi dari Tim Verifikator TTE.');
     }
 }
