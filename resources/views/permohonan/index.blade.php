@@ -54,6 +54,19 @@
             <option value="perpanjangan" {{ request('jenis') == 'perpanjangan' ? 'selected' : '' }}>Perpanjangan</option>
         </select>
 
+       <select name="kategori">
+            <option value="">Semua Kategori</option>
+            <option value="pemerintahan" {{ request('kategori') == 'pemerintahan' ? 'selected' : '' }}>
+                Pemerintahan
+            </option>
+            <option value="sekolah" {{ request('kategori') == 'sekolah' ? 'selected' : '' }}>
+                Sekolah
+            </option>
+            <option value="desa" {{ request('kategori') == 'desa' ? 'selected' : '' }}>
+                Desa
+            </option>
+        </select>
+
         <button type="submit">Filter</button>
     </form>
 
@@ -64,6 +77,7 @@
                 <tr>
                     <th>Tanggal</th>
                     <th>Nama</th>
+                    <th>Unit Kerja</th> 
                     <th>NIK</th>
                     <th>Jenis</th>
                     <th>Status</th>
@@ -75,6 +89,7 @@
                     <tr>
                         <td>{{ $item->tanggal->format('d-m-Y H:i') }}</td>
                         <td>{{ $item->nama }}</td>
+                        <td>{{ $item->unit_kerja }}</td>
                         <td>{{ $item->nik }}</td>
                         <td>
                             @if($item->jenis_permohonan == 'baru')
@@ -110,6 +125,26 @@
                                     stroke-linejoin="round">
                                     <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/>
                                     <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </a>
+
+                            {{-- Edit --}}
+                            <a href="{{ route('permohonan.edit', $item->id) }}"
+                            class="btn-icon-edit"
+                            title="Edit">
+
+                                <!-- Pencil Icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    stroke-width="1.8"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M12 20h9"/>
+                                    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/>
                                 </svg>
                             </a>
 

@@ -78,6 +78,12 @@ Route::prefix('admin')
     Route::post('/permohonan/{id}/proses', [AdminTteController::class, 'proses'])
         ->name('permohonan.proses');
 
+    Route::get('/permohonan/{id}/edit', [AdminTteController::class, 'edit'])
+        ->name('permohonan.edit');
+
+    Route::put('/permohonan/{id}', [AdminTteController::class, 'update'])
+        ->name('permohonan.update');
+
     Route::delete('/permohonan/{id}', [AdminTteController::class, 'destroy'])
     ->name('permohonan.destroy');
 

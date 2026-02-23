@@ -43,6 +43,12 @@ class PermohonanController extends Controller
             $query->where('jenis_permohonan', $request->jenis);
         }
 
+        if ($request->kategori) {
+            $query->whereHas('unitKerja', function ($q) use ($request) {
+                $q->where('kategori', $request->kategori);
+            });
+        }
+
         // ================= STATUS FILTER =================
         if ($request->status) {
             $query->where('status', $request->status);

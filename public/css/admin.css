@@ -525,6 +525,73 @@ font-size: 14px;
 /* ======================
    PAGE PERMOHONAN
 ====================== */
+/* Container aksi */
+.aksi-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Base icon button */
+.aksi-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    background: transparent;
+    border: 1px solid transparent;
+    transition: all 0.18s ease;
+    cursor: pointer;
+}
+
+/* Icon size */
+.aksi-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* Detail */
+.aksi-detail {
+    color: #2563eb;
+}
+.aksi-detail:hover {
+    background: rgba(37, 99, 235, 0.08);
+    border-color: rgba(37, 99, 235, 0.15);
+}
+
+/* Edit */
+.aksi-edit {
+    color: #16a34a;
+}
+.aksi-edit:hover {
+    background: rgba(22, 163, 74, 0.08);
+    border-color: rgba(22, 163, 74, 0.15);
+}
+
+/* Delete */
+.aksi-delete {
+    color: #dc2626;
+}
+.aksi-delete:hover {
+    background: rgba(220, 38, 38, 0.08);
+    border-color: rgba(220, 38, 38, 0.15);
+}
+
+.btn-icon-edit {
+    color: #16a34a;
+    padding: 6px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.btn-icon-edit:hover {
+    background: rgba(22, 163, 74, 0.1);
+}
+
 .btn-detail,
 .btn-icon-delete {
     background: transparent;
@@ -545,6 +612,79 @@ font-size: 14px;
 
 .btn-icon-delete:hover {
     color: #b91c1c;
+}
+
+.form-card {
+    background: #fff;
+    padding: 28px;
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+    margin-top: 20px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #374151;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 9px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #2563eb;
+    outline: none;
+}
+
+.full-width {
+    grid-column: span 2;
+}
+
+.form-actions {
+    margin-top: 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+}
+
+.btn-secondary {
+    background: #e5e7eb;
+    color: #374151;
+    padding: 8px 18px;
+    border-radius: 8px;
+    text-decoration: none;
 }
 
 .page-container {

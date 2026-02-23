@@ -31,6 +31,11 @@ class TteLog extends Model
         return $this->belongsTo(\App\Models\User::class, 'diproses_oleh');
     }
 
+    public function unitKerja()
+    {
+        return $this->belongsTo(\App\Models\UnitKerja::class, 'unit_kerja', 'nama');
+    }
+
     protected $casts = [
         'tanggal' => 'datetime',
     ];

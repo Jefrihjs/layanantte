@@ -127,6 +127,36 @@ class AdminTteController extends Controller
             ->with('success', 'Permohonan sedang diproses.');
     }
 
+        public function edit($id)
+    {
+        $log = \App\Models\TteLog::findOrFail($id);
+
+        return view('admin.permohonan.edit', compact('log'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $log = \App\Models\TteLog::findOrFail($id);
+
+        $request->validate([
+            'nama' => 'required|string|max:100',
+            'jabatan' => 'required|string|max:100',
+            'no_hp' => ['required','regex:/^08[0-9]{8,11}$/'],
+            'keterangan' => 'required|string|max:500',
+        ]);
+
+        $log->update([
+            'nama' => $request->nama,
+            'jabatan' => $request->jabatan,
+            'no_hp' => $request->no_hp,
+            'keterangan' => $request->keterangan,
+        ]);
+
+        return redirect()
+            ->route('permohonan.index')
+            ->with('success', 'Data berhasil diperbarui.');
+    }
+
     public function destroy($id)
     {
         $log = \App\Models\TteLog::findOrFail($id);
