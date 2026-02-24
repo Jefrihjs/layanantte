@@ -52,7 +52,6 @@ class TteLogExport implements
             $no++,
             $log->tanggal->format('d-m-Y'),
             $log->nama,
-            "'" . $log->nik,      // ← INI FIX FINAL
             $log->unit_kerja,
             $jenis,
             $log->keterangan,
@@ -66,7 +65,6 @@ class TteLogExport implements
             'No',
             'Tanggal',
             'Nama',
-            'NIK',
             'Unit Kerja',
             'Jenis Permohonan',
             'Keterangan',
