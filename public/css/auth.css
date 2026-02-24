@@ -55,7 +55,6 @@ body {
     opacity: 0.4;
 }
 
-
 .form-group {
     margin-bottom: 18px;
 }
@@ -114,4 +113,82 @@ body {
     text-align: center;
     color: #16a34a;
     margin-bottom: 15px;
+}
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding-right: 40px !important;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+}
+
+.toggle-password:hover {
+    color: #1f2937;
+}
+
+/* ===== MOBILE LOGIN FIX FINAL ===== */
+@media (max-width: 768px) {
+
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    .login-wrapper {
+        width: 100% !important;
+        min-height: 100vh !important;
+        padding: 40px 20px !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: flex-start !important;
+    }
+
+    .login-card {
+        width: 100% !important;
+        max-width: 420px !important;
+        margin: 0 auto !important;
+        padding: 26px !important;
+        border-radius: 20px !important;
+    }
+
+    .login-card img {
+        width: 60px !important;
+    }
+
+    .login-card h1 {
+        font-size: 22px !important;
+    }
+
+    .login-card input {
+        height: 44px !important;
+        font-size: 14px !important;
+    }
+
+    .btn-login {
+        height: 46px !important;
+        font-size: 15px !important;
+    }
+
+    .remember-row input[type="checkbox"] {
+    appearance: auto !important;
+    -webkit-appearance: checkbox !important;
+    width: 16px !important;
+    height: 16px !important;
+    border-radius: 4px !important;
+    margin-right: 8px;
+    cursor: pointer;
+}
 }
