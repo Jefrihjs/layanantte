@@ -61,7 +61,7 @@ class PermohonanController extends Controller
             });
         }
 
-        $data = $query->latest()->paginate(10);
+        $data = $query->latest('tanggal')->paginate(10)->withQueryString();
 
         return view('permohonan.index', compact('data'));
     }

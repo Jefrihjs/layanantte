@@ -1,3 +1,37 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* --- RESET IKON VERSI ANTI-HANCUR --- */
+i, [class^="fa-"], [class*=" fa-"], svg {
+    display: inline-flex !important; /* Pakai Flex agar presisi */
+    align-items: center !important;
+    justify-content: center !important;
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 18px !important;
+    line-height: 1 !important; /* Reset line-height agar tidak nambah tinggi */
+    vertical-align: middle !important;
+    overflow: hidden !important;
+    font-style: normal !important;
+    flex-shrink: 0 !important; /* Kunci agar tidak gepeng */
+}
+
+/* Pastikan di Sidebar teksnya tidak nempel */
+.sidebar-nav a {
+    display: flex !important;
+    align-items: center !important;
+}
+
+.sidebar-nav a i {
+    margin-right: 12px !important;
+}
+
+/* Kotak Bento Box (Statistik) */
+.icon-box {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.icon-box i {
+    font-size: 24px !important;
+    width: 24px !important;
+    height: 24px !important;
+}

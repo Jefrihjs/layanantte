@@ -159,17 +159,49 @@ new Chart(document.getElementById('statusChart'), {
     }
 });
 
+// Donut Jenis
 new Chart(document.getElementById('jenisChart'), {
     type: 'doughnut',
     data: {
-        labels: ['Pendaftaran Baru','Reset Passphrase','Perpanjangan'],
+        labels: ['Baru', 'Reset', 'Perpanjangan'],
         datasets: [{
-            data: [
-                {{ $totalBaru }},
-                {{ $totalReset }},
-                {{ $totalPerpanjangan }}
-            ]
+            data: [{{ $pendaftaran }}, {{ $reset }}, {{ $perpanjangan }}],
+            backgroundColor: ['#3b82f6', '#fbbf24', '#34d399'],
+            borderWidth: 0,
+            // Efek melayang: potongan akan keluar sejauh 15px saat di-hover
+            hoverOffset: 15, 
+            // Menambah jarak antar potongan (opsional, biar lebih elegan)
+            spacing: 5 
         }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '75%', // Diperlebar sedikit lubang tengahnya biar lebih modern
+        layout: {
+            padding: 20 // Beri ruang agar saat melayang tidak terpotong garis canvas
+        },
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    usePointStyle: true, // Ikon bulat di legend
+                    padding: 20
+                }
+            },
+            tooltip: {
+                // Tooltip lebih cantik
+                backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                padding: 12,
+                cornerRadius: 10,
+                displayColors: true
+            }
+        },
+        // Efek transisi saat hover diperhalus
+        animation: {
+            animateScale: true,
+            animateRotate: true
+        }
     }
 });
 </script>

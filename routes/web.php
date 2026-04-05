@@ -7,13 +7,7 @@ use App\Http\Controllers\PublicTteController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PermohonanController;
 use App\Http\Controllers\UserController;
-
-/*
-|--------------------------------------------------------------------------
-| WEB ROUTES
-|--------------------------------------------------------------------------
-*/
-
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,14 +19,9 @@ Route::get('/', function () {
     return redirect('/layanan');
 });
 
-Route::get('/layanan', [PublicTteController::class, 'index'])
-    ->name('layanan.index');
-
-Route::post('/layanan/check', [PublicTteController::class, 'checkNik'])
-    ->name('layanan.check');
-
-Route::post('/layanan/store', [PublicTteController::class, 'store'])
-    ->name('layanan.store');
+Route::get('/layanan', [PublicTteController::class, 'index'])->name('layanan.index');
+Route::post('/layanan/check', [PublicTteController::class, 'checkNik'])->name('layanan.check');
+Route::post('/layanan/store', [PublicTteController::class, 'store'])->name('layanan.store');
 
 /*
 |--------------------------------------------------------------------------
@@ -40,75 +29,49 @@ Route::post('/layanan/store', [PublicTteController::class, 'store'])
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('admin')
-    ->middleware(['auth'])
-    ->group(function () {
+Route::middleware(['auth'])->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | DASHBOARD (Monitoring Only)
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/dashboard', [DashboardController::class, 'index'])
-        ->name('dashboard');
+    // --- FIX ERROR: DEFINE ROUTE VERIFIKASI ---
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('status', 'verification-link-sent');
+    })->middleware('throttle:6,1')->name('verification.send');
 
+    // --- PREFIX ADMIN ---
+    Route::prefix('admin')->group(function () {
 
-    Route::resource('users', UserController::class);
-    Route::get('/admin', [AdminTteController::class, 'index'])
-    ->name('admin.dashboard');
-    
+        /* DASHBOARD */
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/admin', [AdminTteController::class, 'index'])->name('admin.dashboard');
 
-    /*
-    |--------------------------------------------------------------------------
-    | DATA PERMOHONAN (Operasional)
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/permohonan', [PermohonanController::class, 'index'])
-        ->name('permohonan.index');
+        /* MANAJEMEN USER (Hanya Super Admin) */
+        Route::resource('users', UserController::class);
+        Route::put('/users/{id}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
 
-    Route::get('/permohonan/export', [AdminTteController::class, 'export'])
-        ->name('permohonan.export');
+        /* DATA PERMOHONAN */
+        Route::get('/permohonan', [PermohonanController::class, 'index'])->name('permohonan.index');
+        Route::get('/permohonan/export', [AdminTteController::class, 'export'])->name('permohonan.export');
+        Route::get('/permohonan/{id}/detail', [AdminTteController::class, 'detail'])->name('permohonan.detail');
+        Route::post('/permohonan/{id}/proses', [AdminTteController::class, 'proses'])->name('permohonan.proses');
+        Route::get('/permohonan/{id}/edit', [AdminTteController::class, 'edit'])->name('permohonan.edit');
+        Route::put('/permohonan/{id}', [AdminTteController::class, 'update'])->name('permohonan.update');
+        Route::delete('/permohonan/{id}', [AdminTteController::class, 'destroy'])->name('permohonan.destroy');
+        Route::get('/permohonan/{id}', [AdminTteController::class, 'show'])->name('permohonan.show');
 
-    Route::get('/permohonan/{id}', [AdminTteController::class, 'show'])
-        ->name('permohonan.show');
+        /* IMPORT */
+        Route::post('/permohonan/import', [AdminTteController::class, 'import'])->name('permohonan.import');
 
-    Route::get('/permohonan/{id}/detail', [AdminTteController::class, 'detail'])
-    ->name('permohonan.detail');
-
-    Route::post('/permohonan/{id}/proses', [AdminTteController::class, 'proses'])
-        ->name('permohonan.proses');
-
-    Route::get('/permohonan/{id}/edit', [AdminTteController::class, 'edit'])
-        ->name('permohonan.edit');
-
-    Route::put('/permohonan/{id}', [AdminTteController::class, 'update'])
-        ->name('permohonan.update');
-
-    Route::delete('/permohonan/{id}', [AdminTteController::class, 'destroy'])
-    ->name('permohonan.destroy');
-
-    /*
-    |--------------------------------------------------------------------------
-    | IMPORT (Opsional)
-    |--------------------------------------------------------------------------
-    */
-    Route::post('/permohonan/import', [AdminTteController::class, 'import'])
-        ->name('permohonan.import');
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | PROFILE
-    |--------------------------------------------------------------------------
-    */
-    Route::get('/profile', [ProfileController::class, 'edit'])
-        ->name('profile.edit');
-
-    Route::patch('/profile', [ProfileController::class, 'update'])
-        ->name('profile.update');
-
-    Route::delete('/profile', [ProfileController::class, 'destroy'])
-        ->name('profile.destroy');
+        /* |--------------------------------------------------------------------------
+        | PROFILE & ACCOUNT SECURITY (FIXED)
+        |--------------------------------------------------------------------------
+        */
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+        
+        // Route khusus untuk ganti password di profil agar tidak error
+        Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('password.update');
+    });
 });
 
 require __DIR__.'/auth.php';

@@ -1,0 +1,36 @@
+version: '3'
+services:
+  tte-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tte-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    networks:
+      - tte-network
+    ports:
+      - "8082:80"
+
+  tte-db:
+    image: mysql:8.0
+    container_name: tte-db
+    restart: unless-stopped
+    ports:
+      - "3308:3306"  # <--- TAMBAHKAN BARIS INI (3308 adalah port luar)
+    environment:
+      MYSQL_DATABASE: tte_db
+      MYSQL_ROOT_PASSWORD: rootpassword
+    volumes:
+      - tte-mysql-data:/var/lib/mysql
+    networks:
+      - tte-network
+
+networks:
+  tte-network:
+    driver: bridge
+
+volumes:
+  tte-mysql-data:

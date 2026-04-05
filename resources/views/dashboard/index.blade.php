@@ -1,215 +1,148 @@
 @extends('layouts.app')
 
-@section('content')
+{{-- Topbar akan otomatis mengambil ini sebagai judul di atas --}}
+@section('page_title', 'Dashboard Monitoring') 
 
+@section('content')
 <div class="dashboard-container">
 
-    <div class="dashboard-header">
-
-    <div class="header-left">
-        <h2>Dashboard Monitoring</h2>
-        <p class="header-sub">
-            <strong>{{ $total }}</strong> permohonan pada tahun {{ $tahun }},
-            didominasi oleh 
-            <strong>
-                @if($pendaftaran >= $reset && $pendaftaran >= $perpanjangan)
-                    Pendaftaran Baru
-                @elseif($reset >= $perpanjangan)
-                    Reset Passphrase
-                @else
-                    Perpanjangan
-                @endif
-            </strong>.
-        </p>
-    </div>
-
-    <form method="GET" class="header-filter">
-        <select name="tahun" onchange="this.form.submit()">
-            @for($i = date('Y'); $i >= date('Y') - 5; $i--)
-                <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>
-                    {{ $i }}
-                </option>
-            @endfor
-        </select>
-    </form>
-
-</div>
-
-
-<div class="stats-grid-new">
-
+    {{-- 1. KOTAK STATISTIK (4 KOLOM) --}}
+    <div class="stats-grid-new">
+    
     <a href="{{ route('permohonan.index', ['tahun' => $tahun]) }}" 
-       class="stat-card-new total">
-
+       class="stat-card-new shadow-lg border-0 relative overflow-hidden" 
+       style="background: linear-gradient(135deg, #0f766e 0%, #115e59 100%); color: white !important; padding: 2rem 1.5rem !important;">
         <div class="card-top">
-            <div class="card-icon total-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="18" height="18" rx="4"/>
-                    <line x1="8" y1="15" x2="8" y2="11"/>
-                    <line x1="12" y1="15" x2="12" y2="7"/>
-                    <line x1="16" y1="15" x2="16" y2="9"/>
-                </svg>
+            <div class="card-icon" style="background: rgba(255,255,255,0.15); color: white; width: 45px; height: 45px; border-radius: 12px;">
+                <i class="fa-solid fa-file-invoice"></i>
             </div>
-            <div class="card-title">Total Permohonan</div>
+            <div class="card-title text-white opacity-80" style="font-size: 13px;">Total Permohonan</div>
         </div>
-
-        <div class="card-number">{{ $total }}</div>
-        <div class="card-sub">Total Permohonan</div>
-
+        <div class="card-number text-white" style="font-size: 32px; margin-top: 10px;">{{ $total }}</div>
+        <div class="card-sub text-white opacity-50">Tahun {{ $tahun }}</div>
+        {{-- Ornamen Lingkaran Halus --}}
+        <div style="position: absolute; bottom: -20px; right: -20px; width: 80px; height: 80px; background: rgba(255,255,255,0.05); border-radius: 50%;"></div>
     </a>
-
 
     <a href="{{ route('permohonan.index', ['status' => 'pending', 'tahun' => $tahun]) }}" 
-       class="stat-card-new pending">
-
+       class="stat-card-new shadow-lg border-0 relative overflow-hidden"
+       style="background: linear-gradient(135deg, #d97706 0%, #b45309 100%); color: white !important; padding: 2rem 1.5rem !important;">
         <div class="card-top">
-            <div class="card-icon pending-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="9"/>
-                    <path d="M12 7v5l3 2"/>
-                </svg>
+            <div class="card-icon" style="background: rgba(255,255,255,0.15); color: white; width: 45px; height: 45px; border-radius: 12px;">
+                <i class="fa-solid fa-clock"></i>
             </div>
-            <div class="card-title">Pending</div>
+            <div class="card-title text-white opacity-80" style="font-size: 13px;">Pending</div>
         </div>
-
-        <div class="card-number">{{ $pending }}</div>
-        <div class="card-sub">Pending</div>
-
+        <div class="card-number text-white" style="font-size: 32px; margin-top: 10px;">{{ $pending }}</div>
+        <div class="card-sub text-white opacity-50">Menunggu Verifikasi</div>
+        <div style="position: absolute; bottom: -20px; right: -20px; width: 80px; height: 80px; background: rgba(255,255,255,0.05); border-radius: 50%;"></div>
     </a>
-
 
     <a href="{{ route('permohonan.index', ['status' => 'diproses', 'tahun' => $tahun]) }}" 
-       class="stat-card-new diproses">
-
+       class="stat-card-new shadow-lg border-0 relative overflow-hidden"
+       style="background: linear-gradient(135deg, #115e59 0%, #0d9488 50%, #d97706 100%); color: white !important; padding: 2rem 1.5rem !important;">
         <div class="card-top">
-            <div class="card-icon diproses-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="20 6 9 17 4 12"/>
-                </svg>
+            <div class="card-icon" style="background: rgba(255,255,255,0.15); color: white; width: 45px; height: 45px; border-radius: 12px;">
+                <i class="fa-solid fa-spinner fa-spin-hover"></i>
             </div>
-            <div class="card-title">Diproses</div>
+            <div class="card-title text-white opacity-80" style="font-size: 13px;">Diproses</div>
         </div>
-
-        <div class="card-number">{{ $diproses }}</div>
-        <div class="card-sub">Diproses</div>
-
+        <div class="card-number text-white" style="font-size: 32px; margin-top: 10px;">{{ $diproses }}</div>
+        <div class="card-sub text-white opacity-50">Sedang Berjalan</div>
+        <div style="position: absolute; bottom: -20px; right: -20px; width: 80px; height: 80px; background: rgba(255,255,255,0.05); border-radius: 50%;"></div>
     </a>
 
-
-    <div class="stat-card-new selesai">
-
+    <div class="stat-card-new shadow-lg border-0 relative overflow-hidden"
+         style="background: linear-gradient(135deg, #0f766e 0%, #d97706 100%); color: white !important; padding: 2rem 1.5rem !important;">
         <div class="card-top">
-            <div class="card-icon selesai-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M3 17l6-6 4 4 7-7"/>
-                    <polyline points="14 4 21 4 21 11"/>
-                </svg>
+            <div class="card-icon" style="background: rgba(255,255,255,0.15); color: white; width: 45px; height: 45px; border-radius: 12px;">
+                <i class="fa-solid fa-chart-line"></i>
             </div>
-            <div class="card-title">Tingkat Penyelesaian</div>
+            <div class="card-title text-white opacity-80" style="font-size: 13px;">Penyelesaian</div>
         </div>
-
-        <div class="card-number">{{ $persenSelesai }}%</div>
-        <div class="card-sub">Completion Rate</div>
-
+        <div class="card-number text-white" style="font-size: 32px; margin-top: 10px;">{{ $persenSelesai }}%</div>
+        <div class="card-sub text-white opacity-50">Completion Rate</div>
+        <div style="position: absolute; bottom: -20px; right: -20px; width: 80px; height: 80px; background: rgba(255,255,255,0.05); border-radius: 50%;"></div>
     </div>
 
 </div>
 
-<div class="dashboard-analytics">
-
-    <div class="chart-card-new">
-
-        <div class="chart-header-flex">
-            <h4>Status Permohonan</h4>
-
-            <div class="chart-toggle">
-                <button type="button" id="btnBar" class="active">Bar</button>
-                <button type="button" id="btnPie">Pie</button>
+    {{-- 2. GRAFIK ANALITIK --}}
+    <div class="dashboard-analytics">
+        <div class="chart-card-new">
+            <div class="chart-header-flex d-flex justify-content-between align-items-center mb-4">
+                <h4 class="mb-0">Status Permohonan</h4>
+                
+                {{-- Dropdown Tahun Pindah ke Sini agar Bersih --}}
+                <div class="d-flex gap-2 align-items-center">
+                    <form method="GET" class="m-0">
+                        <select name="tahun" onchange="this.form.submit()" class="form-select form-select-sm w-auto">
+                            @for($i = date('Y'); $i >= date('Y') - 5; $i--)
+                                <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>{{ $i }}</option>
+                            @endfor
+                        </select>
+                    </form>
+                    <div class="chart-toggle d-flex">
+                        <button type="button" id="btnBar" class="btn btn-sm btn-outline-primary active">Bar</button>
+                        <button type="button" id="btnPie" class="btn btn-sm btn-outline-primary ms-1">Pie</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chart-wrapper" style="height: 300px;">
+                <canvas id="statusChart"></canvas>
             </div>
         </div>
-        
-       <div class="chart-wrapper">
-            <canvas id="statusChart"></canvas>
-        </div>
 
-    </div>
-
-    <div class="chart-card-new">
-        <h4>Distribusi Jenis Permohonan</h4>
-        <div class="chart-wrapper">
-            <canvas id="jenisChart"></canvas>
+        <div class="chart-card-new">
+            <h4 class="mb-4">Distribusi Jenis</h4>
+            <div class="chart-wrapper" style="height: 300px;">
+                <canvas id="jenisChart"></canvas>
+            </div>
         </div>
     </div>
 
-</div>
-
-<div class="recent-card">
-    <h4>Permohonan Terbaru</h4>
-    <div class="table-responsive">
-    <table>
-        <thead>
-            <tr>
-                <th>Nama</th>
-                <th>Jenis</th>
-                <th>Status</th>
-                <th>Tanggal</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($latest as $item)
-            <tr>
-                <td>{{ $item->nama }}</td>
-                <td>{{ $item->jenis_permohonan }}</td>
-                <td>
-                    @if($item->status == 'pending')
-                        <span class="badge-status pending">Pending</span>
-                    @elseif($item->status == 'diproses')
-                        <span class="badge-status diproses">Diproses</span>
-                    @endif
-                </td>
-                <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-    </div>
-    <div style="text-align:right; margin-top:15px;">
-        <a href="{{ route('permohonan.index') }}" class="btn-primary">
-            Lihat Semua Data
-        </a>
+    {{-- 3. TABEL TERBARU --}}
+    <div class="recent-card border-0 shadow-sm p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0">Permohonan Terbaru</h4>
+            <a href="{{ route('permohonan.index') }}" class="btn btn-primary btn-sm px-3">
+                Lihat Semua Data
+            </a>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nama</th>
+                        <th>Jenis</th>
+                        <th>Status</th>
+                        <th>Tanggal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($latest as $item)
+                    <tr>
+                        <td class="fw-bold">{{ $item->nama }}</td>
+                        <td class="text-capitalize small">{{ str_replace('_', ' ', $item->jenis_permohonan) }}</td>
+                        <td>
+                            <span class="badge {{ $item->status == 'pending' ? 'bg-warning text-dark' : 'bg-success' }} px-3">
+                                {{ ucfirst($item->status) }}
+                            </span>
+                        </td>
+                        <td class="text-muted small">{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
+{{-- SCRIPTS --}}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-
-    /* ================= CENTER TEXT PLUGIN (DONUT) ================= */
-    const centerText = {
-        id: 'centerText',
-        afterDraw(chart) {
-            const { ctx, chartArea } = chart;
-            if (!chartArea) return;
-
-            ctx.save();
-            ctx.font = 'bold 26px sans-serif';
-            ctx.fillStyle = '#111827';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-
-            ctx.fillText(
-                {{ $total }},
-                (chartArea.left + chartArea.right) / 2,
-                (chartArea.top + chartArea.bottom) / 2
-            );
-
-            ctx.restore();
-        }
-    };
-
-    /* ================= STATUS CHART (BAR / PIE TOGGLE) ================= */
-
     const statusData = {
         labels: ['Pending','Diproses'],
         datasets: [{
@@ -220,147 +153,83 @@ document.addEventListener("DOMContentLoaded", function() {
     };
 
     const ctxStatus = document.getElementById('statusChart');
-
     let statusChart = new Chart(ctxStatus, {
         type: 'bar',
         data: statusData,
         options: {
-            plugins: {
-                responsive: true,
-                maintainAspectRatio: false,
-                legend: { display: false }
-            },
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
             scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: '#f1f5f9'
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false
-                    }
-                }
+                y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                x: { grid: { display: false } }
             }
         }
     });
 
+    // Toggle Bar/Pie
     document.getElementById('btnBar').addEventListener('click', function() {
         statusChart.destroy();
-        statusChart = new Chart(ctxStatus, {
-            type: 'bar',
-            data: statusData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                y: { beginAtZero: true }
-                }
-            }
-        });
-        setActive(this);
+        statusChart = new Chart(ctxStatus, { type: 'bar', data: statusData, options: { responsive: true, maintainAspectRatio: false } });
+        updateBtn(this);
     });
 
     document.getElementById('btnPie').addEventListener('click', function() {
         statusChart.destroy();
-        statusChart = new Chart(ctxStatus, {
-            type: 'pie',
-            data: statusData,
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: { legend: { position: 'bottom' } }
-            }
-        });
-        setActive(this);
+        statusChart = new Chart(ctxStatus, { type: 'pie', data: statusData, options: { responsive: true, maintainAspectRatio: true } });
+        updateBtn(this);
     });
 
-    function setActive(button) {
-        document.querySelectorAll('.chart-toggle button')
-            .forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
+    function updateBtn(btn) {
+        document.querySelectorAll('.chart-toggle button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
     }
 
-    /* ================= DONUT JENIS ================= */
-
+    // Donut Jenis
     new Chart(document.getElementById('jenisChart'), {
         type: 'doughnut',
         data: {
-            labels: ['Pendaftaran Baru','Reset Passphrase','Perpanjangan'],
+            labels: ['Baru', 'Reset', 'Perpanjangan'],
             datasets: [{
-                data: [
-                    {{ $pendaftaran }},
-                    {{ $reset }},
-                    {{ $perpanjangan }}
-                ],
-                backgroundColor: [
-                    '#3b82f6',  // biru soft
-                    '#fbbf24',  // kuning soft
-                    '#34d399'   // hijau soft
-                ],
-                borderWidth: 0
+                data: [{{ $pendaftaran }}, {{ $reset }}, {{ $perpanjangan }}],
+                backgroundColor: ['#3b82f6', '#fbbf24', '#34d399'],
+                borderWidth: 0,
+                // Efek melayang: potongan akan keluar sejauh 15px saat di-hover
+                hoverOffset: 20, 
+                // Menambah jarak antar potongan (opsional, biar lebih elegan)
+                spacing: 5 
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            cutout: '65%',
-            radius: '65%',
+            cutout: '75%', // Diperlebar sedikit lubang tengahnya biar lebih modern
+            layout: {
+                padding: 20 // Beri ruang agar saat melayang tidak terpotong garis canvas
+            },
             plugins: {
                 legend: {
-                    position: 'right',
+                    position: 'bottom',
                     labels: {
-                        boxWidth: 12,
-                        padding: 15,
-                        generateLabels(chart) {
-                            const data = chart.data.datasets[0].data;
-                            const total = data.reduce((a,b)=>a+b,0);
-
-                            return chart.data.labels.map((label, i) => {
-                                const value = data[i];
-                                const percent = total > 0 ? Math.round((value/total)*100) : 0;
-
-                                return {
-                                    text: label + '  ' + percent + '%',
-                                    fillStyle: chart.data.datasets[0].backgroundColor[i],
-                                    strokeStyle: chart.data.datasets[0].backgroundColor[i],
-                                    lineWidth: 0,
-                                    hidden: false,
-                                    index: i
-                                };
-                            });
-                        }
+                        usePointStyle: true, // Ikon bulat di legend
+                        padding: 20
                     }
+                },
+                tooltip: {
+                    // Tooltip lebih cantik
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    padding: 12,
+                    cornerRadius: 10,
+                    displayColors: true
                 }
+            },
+            // Efek transisi saat hover diperhalus
+            animation: {
+                animateScale: true,
+                animateRotate: true
             }
-        },
-        plugins: [{
-            id: 'centerPercent',
-            afterDraw(chart) {
-                const { ctx, chartArea } = chart;
-                if (!chartArea) return;
-
-                const data = chart.data.datasets[0].data;
-                const total = data.reduce((a,b)=>a+b,0);
-                const maxValue = Math.max(...data);
-                const percent = total > 0 ? Math.round((maxValue/total)*100) : 0;
-
-                ctx.save();
-                ctx.font = 'bold 28px sans-serif';
-                ctx.fillStyle = '#111827';
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(
-                    percent + '%',
-                    (chartArea.left + chartArea.right)/2,
-                    (chartArea.top + chartArea.bottom)/2
-                );
-                ctx.restore();
-            }
-        }]
+        }
     });
 });
 </script>
-
 @endsection
