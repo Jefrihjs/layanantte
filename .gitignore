@@ -17,3 +17,7 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+backup_tte.sql
+*.sql
+public/img/*.Zone.Identifier
+storage/logs/*.log

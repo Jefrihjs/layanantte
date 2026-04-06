@@ -19,7 +19,7 @@ services:
     container_name: tte-db
     restart: unless-stopped
     ports:
-      - "3308:3306"  # <--- TAMBAHKAN BARIS INI (3308 adalah port luar)
+      - "3308:3306"  
     environment:
       MYSQL_DATABASE: tte_db
       MYSQL_ROOT_PASSWORD: rootpassword
