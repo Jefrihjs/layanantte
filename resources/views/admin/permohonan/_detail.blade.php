@@ -62,7 +62,8 @@
                     <label class="text-muted small fw-bold d-block mb-1 text-uppercase">
                         <i class="fa-solid fa-tag me-2 text-primary"></i>Jenis Permohonan
                     </label>
-                    <span class="badge bg-info text-dark fw-bold px-3 py-2 rounded-pill" style="font-size: 10px;">
+                    <br>
+                    <span class="badge bg-info text-dark fw-bold px-3 py-2 rounded-pill mt-1" style="font-size: 10px;">
                         @if($log->jenis_permohonan == 'reset_passphrase') 
                             Reset Passphrase
                         @elseif($log->jenis_permohonan == 'perpanjangan') 
@@ -85,6 +86,28 @@
                     </div>
                 </div>
             </div>
+
+            {{-- FORM INPUT EMAIL UNTUK PROSES WA (HANYA JIKA PENDING) --}}
+            @if($log->status == 'pending')
+            <div class="col-12 mt-2">
+                {{-- PERUBAHAN: Tambahkan target="_blank" dan onsubmit untuk refresh halaman otomatis --}}
+                <form method="POST" action="{{ route('admin.permohonan.proses', $log->id) }}" id="formProsesWA" target="_blank" onsubmit="setTimeout(function(){ window.location.reload(); }, 1500);">
+                    @csrf
+                    <div style="background: #e0f2fe; padding: 20px; border-radius: 15px; border-left: 5px solid #0284c7;">
+                        <label class="text-dark small fw-bold d-block mb-1 text-uppercase">
+                            <i class="fa-solid fa-envelope me-2" style="color: #0284c7;"></i>Input Email Pemohon
+                        </label>
+                        <p class="text-muted small mb-3">Sistem akan mengarahkan Anda ke WhatsApp untuk mengirim detail permohonan ke nomor <strong>{{ $log->no_hp }}</strong>.</p>
+                        
+                        <input type="email" name="email" class="form-control" required 
+                            placeholder="contoh: nama.pegawai@beltim.go.id" 
+                            value="{{ $log->email ?? '' }}" 
+                            style="border-radius: 10px; border: 1px solid #bae6fd;">
+                    </div>
+                </form>
+            </div>
+            @endif
+
         </div>
     </div>
 
@@ -93,12 +116,41 @@
         <button type="button" class="btn btn-secondary btn-sm px-4 rounded-pill fw-bold" data-bs-dismiss="modal">Tutup</button>
         
         @if($log->status == 'pending')
-            <form method="POST" action="{{ route('permohonan.proses', $log->id) }}" class="m-0">
+            {{-- Tombol untuk form pending --}}
+            <button type="submit" form="formProsesWA" class="btn btn-primary btn-sm px-4 rounded-pill fw-bold shadow-sm" style="background: #0f766e; border: none;">
+                <i class="fa-brands fa-whatsapp me-2" style="font-size: 16px;"></i> Proses & Kirim WA
+            </button>
+        @else
+            {{-- FITUR BARU: Tombol Kirim Ulang WA dengan SweetAlert2 --}}
+            <form method="POST" action="{{ route('admin.permohonan.proses', $log->id) }}" id="formKirimUlang_{{ $log->id }}" target="_blank">
                 @csrf
-                <button type="submit" class="btn btn-primary btn-sm px-4 rounded-pill fw-bold shadow-sm" style="background: #0f766e; border: none;">
-                    <i class="fa-solid fa-check me-2"></i> Proses Permohonan Sekarang
+                <input type="hidden" name="email" value="{{ $log->email }}">
+                
+                {{-- Perhatikan perubahan pada type="button" dan tambahan onclick --}}
+                <button type="button" onclick="konfirmasiKirimUlang({{ $log->id }})" class="btn btn-outline-success btn-sm px-4 rounded-pill fw-bold shadow-sm">
+                    <i class="fa-brands fa-whatsapp me-2" style="font-size: 16px;"></i> Kirim Ulang WA
                 </button>
             </form>
         @endif
     </div>
 </div>
+
+<script>
+    function konfirmasiKirimUlang(formId) {
+        Swal.fire({
+            title: 'Kirim Ulang Pesan WA?',
+            text: "Pesan WA sudah pernah terkirim sebelumnya. Apakah Anda yakin ingin mengirim ulang pesan ini?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#0f766e',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '<i class="fa-brands fa-whatsapp me-1"></i> Ya, Kirim Ulang!',
+            cancelButtonText: 'Batal',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('formKirimUlang_' + formId).submit();
+            }
+        });
+    }
+</script>

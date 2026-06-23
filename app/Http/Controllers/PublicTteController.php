@@ -65,22 +65,44 @@ class PublicTteController extends Controller
     // ===============================
     public function checkNik(Request $request)
     {
+        // 1. Ambil NIK dari input form ATAU dari session (jika user me-refresh halaman)
+        $nik = $request->nik ?? session('temp_nik');
+
+        // 2. Jika tidak ada NIK sama sekali (sesi habis/akses langsung), kembalikan ke awal
+        if (!$nik) {
+            return redirect()->route('layanan.index')->withErrors([
+                'nik' => 'Sesi telah habis atau data NIK tidak ditemukan. Silakan masukkan kembali.'
+            ]);
+        }
+
+        // 3. Masukkan kembali NIK ke dalam request agar lolos validasi bawaan Laravel
+        $request->merge(['nik' => $nik]);
+
+        // 4. Validasi format bawaan Laravel
         $request->validate([
             'nik' => ['required', 'digits:16']
         ]);
 
+        // 5. Validasi struktur NIK custom (fungsi validNik milik Anda)
         if (!$this->validNik($request->nik)) {
-            return back()->withErrors([
+            // Gunakan redirect()->route() bukan back() agar lebih aman dari error routing
+            return redirect()->route('layanan.index')->withErrors([
                 'nik' => 'NIK tidak valid atau salah ketik.'
             ]);
         }
 
+        // 6. Ambil riwayat permohonan terakhir untuk autofill (jika ada)
         $last = TteLog::where('nik', $request->nik)
             ->orderBy('created_at', 'desc')
             ->first();
 
+        // 7. Ambil data instansi/unit kerja
         $unitKerjas = UnitKerja::orderBy('nama')->get();
 
+        // 8. Simpan NIK ke session agar aman saat halaman form di-refresh
+        session(['temp_nik' => $request->nik]);
+        
+        // 9. Tampilkan halaman form selanjutnya
         return view('public.form', [
             'nik' => $request->nik,
             'last' => $last,

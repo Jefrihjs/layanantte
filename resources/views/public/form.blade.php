@@ -52,6 +52,7 @@
 
             <form method="POST" action="{{ route('layanan.store') }}" class="p-8 md:p-12">
                 @csrf
+                
                 <input type="hidden" name="tanggal" value="{{ now()->format('Y-m-d') }}">
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -65,7 +66,7 @@
                     <div class="form-group">
                         <label class="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">NIK (Sesuai KTP)</label>
                         <input type="text" name="nik" class="w-full px-4 py-3 bg-slate-100 border-2 border-slate-200 rounded-2xl font-bold text-slate-500 cursor-not-allowed"
-                               value="{{ $nik }}" readonly>
+                               value="{{ $nik ?? session('temp_nik') }}" readonly>
                     </div>
 
                     <div class="form-group">

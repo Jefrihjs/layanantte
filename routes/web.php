@@ -19,6 +19,10 @@ Route::get('/', function () {
     return redirect('/layanan');
 });
 
+Route::get('/layanan/check', function () {
+    return redirect()->route('layanan.index');
+});
+
 Route::get('/layanan', [PublicTteController::class, 'index'])->name('layanan.index');
 Route::post('/layanan/check', [PublicTteController::class, 'checkNik'])->name('layanan.check');
 Route::post('/layanan/store', [PublicTteController::class, 'store'])->name('layanan.store');
@@ -52,7 +56,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/permohonan', [PermohonanController::class, 'index'])->name('permohonan.index');
         Route::get('/permohonan/export', [AdminTteController::class, 'export'])->name('permohonan.export');
         Route::get('/permohonan/{id}/detail', [AdminTteController::class, 'detail'])->name('permohonan.detail');
-        Route::post('/permohonan/{id}/proses', [AdminTteController::class, 'proses'])->name('permohonan.proses');
+        Route::post('/permohonan/{id}/proses', [PermohonanController::class, 'prosesPermohonan'])->name('admin.permohonan.proses');
         Route::get('/permohonan/{id}/edit', [AdminTteController::class, 'edit'])->name('permohonan.edit');
         Route::put('/permohonan/{id}', [AdminTteController::class, 'update'])->name('permohonan.update');
         Route::delete('/permohonan/{id}', [AdminTteController::class, 'destroy'])->name('permohonan.destroy');

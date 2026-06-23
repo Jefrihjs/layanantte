@@ -22,6 +22,7 @@ class TteLog extends Model
         'jenis_permohonan',
         'keterangan',
         'status',
+        'email',
         'diproses_oleh',
         'diproses_pada',
     ];

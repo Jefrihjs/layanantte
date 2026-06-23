@@ -240,6 +240,11 @@
     .modal-backdrop {
         z-index: 2040 !important;
     }
+
+    .swal2-container {
+        z-index: 9999 !important;
+    }
+    
     /* Pastikan konten modal tidak terpotong */
     .modal-content {
         border-radius: 20px !important;
@@ -448,7 +453,25 @@
         }
     });
 </script>
-
+<script>
+    window.konfirmasiKirimUlang = function(formId) {
+        Swal.fire({
+            title: 'Kirim Ulang Pesan WA?',
+            text: "Pesan WA sudah pernah terkirim sebelumnya. Apakah Anda yakin ingin mengirim ulang pesan ini?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#0f766e',
+            cancelButtonColor: '#d33',
+            confirmButtonText: '<i class="fa-brands fa-whatsapp me-1"></i> Ya, Kirim Ulang!',
+            cancelButtonText: 'Batal',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.getElementById('formKirimUlang_' + formId).submit();
+            }
+        });
+    }
+</script>
 @stack('scripts')
 </body>
 </html>
