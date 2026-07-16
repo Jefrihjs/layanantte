@@ -82,7 +82,7 @@
                     </select>
                 </div>
 
-                {{-- FILTER TRIWULAN (BARU) --}}
+                {{-- FILTER TRIWULAN --}}
                 <div class="col-md-2">
                     <label class="small fw-bold text-muted mb-1">Periode Triwulan</label>
                     <select name="triwulan" class="form-select form-select-sm shadow-none">
@@ -94,13 +94,16 @@
                     </select>
                 </div>
 
-                {{-- Jenis Layanan --}}
+                {{-- Jenis Layanan (DIPERBAIKI MENJADI 5 PILIHAN) --}}
                 <div class="col-md-2">
                     <label class="small fw-bold text-muted mb-1">Jenis Layanan</label>
                     <select name="jenis" class="form-select form-select-sm shadow-none">
                         <option value="">Semua Jenis</option>
                         <option value="baru" {{ request('jenis') == 'baru' ? 'selected' : '' }}>Pendaftaran Baru</option>
                         <option value="reset_passphrase" {{ request('jenis') == 'reset_passphrase' ? 'selected' : '' }}>Reset Passphrase</option>
+                        <option value="perpanjangan" {{ request('jenis') == 'perpanjangan' ? 'selected' : '' }}>Perpanjangan</option>
+                        <option value="penghapusan" {{ request('jenis') == 'penghapusan' ? 'selected' : '' }}>Penghapusan</option>
+                        <option value="lapor_kendala" {{ request('jenis') == 'lapor_kendala' ? 'selected' : '' }}>Lapor Kendala</option>
                     </select>
                 </div>
 
@@ -139,7 +142,12 @@
                                 <small class="text-muted">{{ $item->created_at->format('H:i') }} WIB</small>
                             </td>
                             <td>
-                                <div class="fw-bold text-primary">{{ $item->nama }}</div>
+                                <div class="fw-bold text-primary">
+                                    {{ $item->nama }}
+                                    @if($item->jenis_permohonan == 'lapor_kendala')
+                                        <i class="fa-solid fa-bug text-danger ms-1" title="Laporan Kendala"></i>
+                                    @endif
+                                </div>
                                 <div class="text-muted small" style="letter-spacing: 0.5px;">NIK: {{ $item->nik }}</div>
                             </td>
                             <td>
@@ -147,17 +155,28 @@
                             </td>
                             <td>
                                 @php
-                                    $jenis_label = $item->jenis_permohonan == 'baru' ? 'Pendaftaran Baru' : ($item->jenis_permohonan == 'reset_passphrase' ? 'Reset Passphrase' : 'Perpanjangan');
-                                    $jenis_color = $item->jenis_permohonan == 'baru' ? 'bg-primary' : 'bg-info text-dark';
+                                    // LOGIKA BADGE DINAMIS UNTUK SEMUA JENIS
+                                    $jenis_map = [
+                                        'baru' => ['label' => 'Pendaftaran Baru', 'color' => 'primary'],
+                                        'reset_passphrase' => ['label' => 'Reset Passphrase', 'color' => 'info'],
+                                        'perpanjangan' => ['label' => 'Perpanjangan', 'color' => 'success'],
+                                        'penghapusan' => ['label' => 'Penghapusan', 'color' => 'warning'],
+                                        'lapor_kendala' => ['label' => 'Lapor Kendala', 'color' => 'danger'],
+                                    ];
+                                    $current_jenis = $jenis_map[$item->jenis_permohonan] ?? ['label' => 'Tidak Diketahui', 'color' => 'secondary'];
                                 @endphp
-                                <span class="badge {{ $jenis_color }} bg-opacity-10 text-{{ explode(' ', $jenis_color)[0] == 'bg-primary' ? 'primary' : 'dark' }} small border-0 fw-bold px-3 py-2" style="font-size: 10px;">
-                                    {{ $jenis_label }}
+                                <span class="badge bg-{{ $current_jenis['color'] }} bg-opacity-10 text-{{ $current_jenis['color'] }} small border-0 fw-bold px-3 py-2" style="font-size: 10px;">
+                                    {{ $current_jenis['label'] }}
                                 </span>
                             </td>
                             <td class="text-center">
                                 @if($item->status == 'diproses')
                                     <span class="badge-status bg-success bg-opacity-10 text-success border border-success border-opacity-25">
                                         <i class="fa-solid fa-circle-check me-1 small"></i> Diproses
+                                    </span>
+                                @elseif($item->status == 'selesai')
+                                    <span class="badge-status bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25">
+                                        <i class="fa-solid fa-circle-check me-1 small"></i> Selesai
                                     </span>
                                 @else
                                     <span class="badge-status bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25" style="color: #d97706 !important;">
@@ -190,7 +209,6 @@
                     @empty
                         <tr>
                             <td colspan="6" class="text-center py-5">
-                                {{-- Ganti SVG yang mati dengan Ikon FontAwesome --}}
                                 <div class="mb-3">
                                     <i class="fa-solid fa-folder-open text-light" style="font-size: 80px; color: #e2e8f0 !important;"></i>
                                 </div>
@@ -242,8 +260,8 @@
                 text: "Data yang dihapus tidak bisa dikembalikan!",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#0f766e', // Warna Teal
-                cancelButtonColor: '#64748b', // Warna Abu-abu
+                confirmButtonColor: '#0f766e',
+                cancelButtonColor: '#64748b',
                 confirmButtonText: 'Ya, Hapus!',
                 cancelButtonText: 'Batal',
                 border: 'none',
@@ -256,7 +274,6 @@
         });
     });
 
-    // Bonus: Munculkan notifikasi jika berhasil hapus
     @if(session('success'))
         Swal.fire({
             icon: 'success',
@@ -270,11 +287,9 @@
 
 <script>
     function showDetail(url) {
-        // 1. Tampilkan Modal
         const myModal = new bootstrap.Modal(document.getElementById('modalDetail'));
         myModal.show();
 
-        // 2. Reset konten ke loading spinner
         document.getElementById('detailContent').innerHTML = `
             <div class="text-center py-5">
                 <div class="spinner-border text-teal" role="status" style="color: #0f766e;"></div>
@@ -282,7 +297,6 @@
             </div>
         `;
 
-        // 3. Ambil data pakai Fetch API (AJAX)
         fetch(url)
             .then(response => response.text())
             .then(html => {

@@ -82,19 +82,25 @@ class AdminTteController extends Controller
             ->where('jenis_permohonan', 'perpanjangan')
             ->count();
 
+        $totalHapus = TteLog::whereYear('tanggal', $year)
+            ->where('jenis_permohonan', 'penghapusan')
+            ->count();
+
         return view('admin.index', compact(
             'logs',
             'totalTahun',
             'totalReset',
             'totalPerpanjangan',
             'totalBaru',
+            'totalHapus',
             'year'
         ));
     }
 
-    public function show($id)
+        public function show($id)
     {
-        $log = \App\Models\TteLog::with('admin')->findOrFail($id);
+        // Tambahkan ->with('riwayatPermohonan')
+        $log = \App\Models\TteLog::with(['admin', 'riwayatPermohonan'])->findOrFail($id);
 
         if (!request()->ajax()) {
             return redirect()->route('permohonan.index');
@@ -105,10 +111,12 @@ class AdminTteController extends Controller
 
     public function detail($id)
     {
-        $log = \App\Models\TteLog::with('admin')->findOrFail($id);
+        // Tambahkan ->with('riwayatPermohonan')
+        $log = \App\Models\TteLog::with(['admin', 'riwayatPermohonan'])->findOrFail($id);
 
         return view('admin.permohonan._detail', compact('log'));
     }
+
 
     public function proses($id)
     {
@@ -134,7 +142,7 @@ class AdminTteController extends Controller
         return view('admin.permohonan.edit', compact('log'));
     }
 
-    public function update(Request $request, $id)
+        public function update(Request $request, $id)
     {
         $log = \App\Models\TteLog::findOrFail($id);
 
@@ -142,6 +150,8 @@ class AdminTteController extends Controller
             'nama' => 'required|string|max:100',
             'jabatan' => 'required|string|max:100',
             'no_hp' => ['required','regex:/^08[0-9]{8,11}$/'],
+            // TAMBAHKAN VALIDASI JENIS PERMOHONAN INI
+            'jenis_permohonan' => 'required|in:baru,reset_passphrase,perpanjangan,penghapusan',
             'keterangan' => 'required|string|max:500',
         ]);
 
@@ -149,6 +159,8 @@ class AdminTteController extends Controller
             'nama' => $request->nama,
             'jabatan' => $request->jabatan,
             'no_hp' => $request->no_hp,
+            // TAMBAHKAN INI AGAR DATA JENIS TERUPDATE KE DATABASE
+            'jenis_permohonan' => $request->jenis_permohonan,
             'keterangan' => $request->keterangan,
         ]);
 

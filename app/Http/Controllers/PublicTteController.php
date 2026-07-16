@@ -12,7 +12,7 @@ class PublicTteController extends Controller
     // Halaman awal (input NIK)
     public function index()
     {
-        return view('public.index');
+        return view('public.cek_nik');
     }
 
     // ===============================
@@ -60,49 +60,54 @@ class PublicTteController extends Controller
         return true;
     }
 
-    // ===============================
-    // CEK NIK & TAMPILKAN FORM
+        // ===============================
+    // CEK NIK & TAMPILKAN FORM PERMOHONAN
     // ===============================
     public function checkNik(Request $request)
     {
-        // 1. Ambil NIK dari input form ATAU dari session (jika user me-refresh halaman)
         $nik = $request->nik ?? session('temp_nik');
 
-        // 2. Jika tidak ada NIK sama sekali (sesi habis/akses langsung), kembalikan ke awal
         if (!$nik) {
             return redirect()->route('layanan.index')->withErrors([
                 'nik' => 'Sesi telah habis atau data NIK tidak ditemukan. Silakan masukkan kembali.'
             ]);
         }
 
-        // 3. Masukkan kembali NIK ke dalam request agar lolos validasi bawaan Laravel
         $request->merge(['nik' => $nik]);
-
-        // 4. Validasi format bawaan Laravel
         $request->validate([
             'nik' => ['required', 'digits:16']
         ]);
 
-        // 5. Validasi struktur NIK custom (fungsi validNik milik Anda)
         if (!$this->validNik($request->nik)) {
-            // Gunakan redirect()->route() bukan back() agar lebih aman dari error routing
             return redirect()->route('layanan.index')->withErrors([
                 'nik' => 'NIK tidak valid atau salah ketik.'
             ]);
         }
 
-        // 6. Ambil riwayat permohonan terakhir untuk autofill (jika ada)
+        // =========================================================
+        // CEK APAKAH MASIH ADA PERMOHONAN PENDING (BELUM DIPROSES)
+        // =========================================================
+        // CATATAN: Sesuaikan 'status' dan 'pending' dengan nama kolom & value di database Anda.
+        $cekPending = TteLog::where('nik', $request->nik)
+                            ->where('status', 'pending') // Ubah jika di DB Anda berbeda (misal: '0' atau 'diproses')
+                            ->exists();
+
+        if ($cekPending) {
+            return redirect()->route('layanan.check')->withErrors([
+                'nik' => 'Anda masih memiliki permohonan yang sedang diproses (status pending). Mohon tunggu hingga permohonan sebelumnya selesai diproses oleh Admin.'
+            ]);
+        }
+
+        // =========================================================
+
         $last = TteLog::where('nik', $request->nik)
             ->orderBy('created_at', 'desc')
             ->first();
 
-        // 7. Ambil data instansi/unit kerja
         $unitKerjas = UnitKerja::orderBy('nama')->get();
 
-        // 8. Simpan NIK ke session agar aman saat halaman form di-refresh
         session(['temp_nik' => $request->nik]);
         
-        // 9. Tampilkan halaman form selanjutnya
         return view('public.form', [
             'nik' => $request->nik,
             'last' => $last,
@@ -110,6 +115,96 @@ class PublicTteController extends Controller
         ]);
     }
 
+        // ===============================
+    // TAMPILKAN HALAMAN CEK NIK (UNTUK LAPOR KENDALA)
+    // ===============================
+    public function formKendalaNik()
+    {
+        // Kita kirim variabel 'mode' agar di view cek_nik tahu kalau ini untuk lapor kendala
+        return view('public.cek_nik', ['mode' => 'kendala']);
+    }
+
+        // ===============================
+    // PROSES CEK NIK & TAMPILKAN FORM LAPOR KENDALA
+    // ===============================
+    public function checkKendalaNik(Request $request)
+    {
+        $nik = $request->nik ?? session('temp_nik_kendala');
+
+        if (!$nik) {
+            return redirect()->route('layanan.kendala')->withErrors([
+                'nik' => 'Sesi telah habis atau data NIK tidak ditemukan. Silakan masukkan kembali.'
+            ]);
+        }
+
+        $request->merge(['nik' => $nik]);
+        $request->validate(['nik' => ['required', 'digits:16']]);
+
+        if (!$this->validNik($request->nik)) {
+            return redirect()->route('layanan.kendala')->withErrors([
+                'nik' => 'NIK tidak valid atau salah ketik.'
+            ]);
+        }
+
+        // =========================================================
+        // CEK APAKAH MASIH ADA LAPORAN KENDALA PENDING
+        // =========================================================
+        $cekPendingKendala = TteLog::where('nik', $request->nik)
+                            ->where('jenis_permohonan', 'lapor_kendala')
+                            ->where('status', 'pending') // Sesuaikan dengan kolom DB Anda
+                            ->exists();
+
+        if ($cekPendingKendala) {
+            return redirect()->route('layanan.kendala')->withErrors([
+                'nik' => 'Anda masih memiliki laporan kendala yang sedang ditinjau. Tim teknis akan segera menghubungi Anda melalui WhatsApp.'
+            ]);
+        }
+
+        // =========================================================
+
+        $last = TteLog::where('nik', $request->nik)->orderBy('created_at', 'desc')->first();
+        $unitKerjas = UnitKerja::orderBy('nama')->get();
+
+        session(['temp_nik_kendala' => $request->nik]);
+        
+        return view('public.form_kendala', [
+            'nik' => $request->nik,
+            'last' => $last,
+            'unitKerjas' => $unitKerjas
+        ]);
+    }
+
+        // ===============================
+    // SIMPAN DATA LAPOR KENDALA
+    // ===============================
+    public function storeKendala(Request $request)
+    {
+        $request->validate([
+            'nama' => 'required',
+            'nik' => 'required',
+            'no_hp' => 'required',
+            'jabatan' => 'required',
+            'unit_kerja' => 'required',
+            'keterangan' => 'required',
+            'bukti_kendala' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+        ]);
+
+        $data = $request->except('bukti_kendala');
+        $data['jenis_permohonan'] = 'lapor_kendala';
+        $data['tanggal'] = now()->format('Y-m-d');
+
+        if ($request->hasFile('bukti_kendala')) {
+            $file = $request->file('bukti_kendala');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('public/bukti_kendala', $filename);
+            $data['bukti_kendala'] = $filename;
+        }
+
+        TteLog::create($data);
+
+        return redirect()->route('layanan.index')->with('success', 'Laporan kendala Anda berhasil dikirim! Tim teknis akan segera menindaklanjuti.');
+    }
+    
     // ===============================
     // SIMPAN PERMOHONAN
     // ===============================
@@ -165,7 +260,9 @@ class PublicTteController extends Controller
             // Nomor HP harus mulai 08 dan 10–13 digit
             'no_hp' => ['required','regex:/^08[0-9]{8,11}$/'],
 
-            'jenis_permohonan' => 'required|in:baru,reset_passphrase,perpanjangan',
+            // TAMBAHKAN 'penghapusan' DISINI
+            'jenis_permohonan' => 'required|in:baru,reset_passphrase,perpanjangan,penghapusan',
+            
             'keterangan' => 'required|string|max:500',
         ]);
 

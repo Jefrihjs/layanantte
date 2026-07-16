@@ -34,6 +34,22 @@
         background-color: #e2e8f0;
         cursor: not-allowed;
     }
+    
+    /* Perbaikan untuk Select Dropdown */
+    .form-select-custom {
+        border-radius: 12px;
+        padding: 12px 40px 12px 15px; /* Diberi jarak 40px di kanan untuk panah */
+        border: 2px solid #f1f5f9;
+        background-color: #f8fafc;
+        transition: all 0.3s ease;
+        /* HAPUS appearance: auto; biarkan Bootstrap form-select yang atur panahnya */
+    }
+    .form-select-custom:focus {
+        border-color: #0f766e;
+        background-color: #fff;
+        box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.1);
+    }
+
     .btn-save {
         background: linear-gradient(135deg, #0f766e 0%, #115e59 100%);
         color: white;
@@ -101,7 +117,7 @@
                     </div>
                 </div>
 
-                {{-- INFORMASI YANG BISA DIUBAH --}}
+                                {{-- INFORMASI YANG BISA DIUBAH --}}
                 <div class="section-title">
                     <i class="fa-solid fa-pen-to-square text-teal"></i> Perbarui Data
                 </div>
@@ -125,7 +141,22 @@
                         </div>
                     </div>
 
-                    <div class="col-md-12">
+                    {{-- JENIS LAYANAN TTE (HANYA 1 KALI) --}}
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label-custom">Jenis Layanan TTE</label>
+                            <select name="jenis_permohonan" class="form-select form-select-custom @error('jenis_permohonan') is-invalid @enderror" required>
+                                <option value="">-- Pilih Jenis --</option>
+                                <option value="baru" {{ old('jenis_permohonan', $log->jenis_permohonan) == 'baru' ? 'selected' : '' }}>Pendaftaran Sertifikat Elektronik</option>
+                                <option value="reset_passphrase" {{ old('jenis_permohonan', $log->jenis_permohonan) == 'reset_passphrase' ? 'selected' : '' }}>Reset Passphrase</option>
+                                <option value="perpanjangan" {{ old('jenis_permohonan', $log->jenis_permohonan) == 'perpanjangan' ? 'selected' : '' }}>Perpanjangan Sertifikat Elektronik</option>
+                                <option value="penghapusan" {{ old('jenis_permohonan', $log->jenis_permohonan) == 'penghapusan' ? 'selected' : '' }}>Penghapusan Sertifikat Elektronik</option>
+                            </select>
+                            @error('jenis_permohonan') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label class="form-label-custom">Jabatan / Unit Kerja</label>
                             <input type="text" name="jabatan" class="form-control form-control-custom @error('jabatan') is-invalid @enderror" 

@@ -36,12 +36,57 @@
                     <div class="text-dark fw-bold">{{ $log->nik }}</div>
                     <div class="text-muted small">{{ $log->nip ?? '-' }}</div>
                 </div>
-                <div class="mb-0">
+                <div class="mb-4">
                     <label class="text-muted small fw-bold d-block mb-1 text-uppercase">
                         <i class="fa-solid fa-phone me-2 text-primary"></i>Nomor WhatsApp
                     </label>
                     <div class="text-dark fw-bold">{{ $log->no_hp }}</div>
                 </div>
+
+                {{-- === RIWAYAT PERMOHONAN === --}}
+                <div class="mb-0">
+                    <label class="text-muted small fw-bold d-block mb-2 text-uppercase">
+                        <i class="fa-solid fa-clock-rotate-left me-2 text-warning"></i>Riwayat Permohonan
+                    </label>
+                    
+                    @php
+                        $riwayatPermohonan = $log->riwayatPermohonan->sortByDesc('tanggal');
+                        $totalPermohonan = $riwayatPermohonan->count();
+                    @endphp
+
+                    @if($totalPermohonan > 1)
+                        <span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm mb-2" style="font-size: 11px; font-weight: 800;">
+                            <i class="fa-solid fa-triangle-exclamation me-1"></i> PEMOHON SUDAH {{ $totalPermohonan }}x MENGAJUKAN LAYANAN
+                        </span>
+                        <div class="mt-2 p-2 border-start border-warning border-3" style="background-color: #fffbeb; border-radius: 0 8px 8px 0;">
+                            <ul class="list-unstyled mb-0 small">
+                                @foreach($riwayatPermohonan as $riwayat)
+                                    <li class="mb-1 {{ $loop->first ? 'fw-bold text-dark' : 'text-muted' }}">
+                                        <span class="text-capitalize">
+                                            @if($riwayat->jenis_permohonan == 'baru') Pendaftaran Sertifikat Elektronik
+                                            @elseif($riwayat->jenis_permohonan == 'reset_passphrase') Reset Passphrase
+                                            @elseif($riwayat->jenis_permohonan == 'perpanjangan') Perpanjangan Sertifikat Elektronik
+                                            @elseif($riwayat->jenis_permohonan == 'penghapusan') Penghapusan Sertifikat Elektronik
+                                            @elseif($riwayat->jenis_permohonan == 'lapor_kendala') Lapor Kendala TTE
+                                            @endif
+                                        </span> 
+                                        <span class="text-secondary">({{ \Carbon\Carbon::parse($riwayat->tanggal)->format('d-m-Y') }})</span>
+                                        @if($riwayat->status == 'pending')
+                                            <span class="badge bg-warning text-dark" style="font-size:9px;">Pending</span>
+                                        @else
+                                            <span class="badge bg-success" style="font-size:9px;">Diproses</span>
+                                        @endif
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @elseif($totalPermohonan == 1)
+                        <span class="badge bg-success px-3 py-2 rounded-pill shadow-sm" style="font-size: 11px; font-weight: 800;">
+                            <i class="fa-solid fa-check me-1"></i> PERMOHONAN PERTAMA KALI
+                        </span>
+                    @endif
+                </div>
+                {{-- === END RIWAYAT PERMOHONAN === --}}
             </div>
 
             {{-- KOLOM KANAN: DATA KERJA --}}
@@ -64,12 +109,11 @@
                     </label>
                     <br>
                     <span class="badge bg-info text-dark fw-bold px-3 py-2 rounded-pill mt-1" style="font-size: 10px;">
-                        @if($log->jenis_permohonan == 'reset_passphrase') 
-                            Reset Passphrase
-                        @elseif($log->jenis_permohonan == 'perpanjangan') 
-                            Perpanjangan Sertifikat
-                        @else 
-                            Pendaftaran Baru 
+                        @if($log->jenis_permohonan == 'baru') Pendaftaran Sertifikat Elektronik
+                        @elseif($log->jenis_permohonan == 'reset_passphrase') Reset Passphrase
+                        @elseif($log->jenis_permohonan == 'perpanjangan') Perpanjangan Sertifikat Elektronik
+                        @elseif($log->jenis_permohonan == 'penghapusan') Penghapusan Sertifikat Elektronik
+                        @elseif($log->jenis_permohonan == 'lapor_kendala') Lapor Kendala TTE
                         @endif
                     </span>
                 </div>
@@ -79,7 +123,7 @@
             <div class="col-12">
                 <div style="background: #f1f5f9; padding: 20px; border-radius: 15px; border-left: 5px solid #0f766e;">
                     <label class="text-muted small fw-bold d-block mb-2 text-uppercase">
-                        <i class="fa-solid fa-comment-dots me-2 text-primary"></i>Keterangan Admin
+                        <i class="fa-solid fa-comment-dots me-2 text-primary"></i>Keterangan Pemohon
                     </label>
                     <div class="text-dark" style="font-style: italic;">
                         "{{ $log->keterangan ?? 'Tidak ada keterangan tambahan.' }}"
@@ -90,12 +134,11 @@
             {{-- FORM INPUT EMAIL UNTUK PROSES WA (HANYA JIKA PENDING) --}}
             @if($log->status == 'pending')
             <div class="col-12 mt-2">
-                {{-- PERUBAHAN: Tambahkan target="_blank" dan onsubmit untuk refresh halaman otomatis --}}
                 <form method="POST" action="{{ route('admin.permohonan.proses', $log->id) }}" id="formProsesWA" target="_blank" onsubmit="setTimeout(function(){ window.location.reload(); }, 1500);">
                     @csrf
                     <div style="background: #e0f2fe; padding: 20px; border-radius: 15px; border-left: 5px solid #0284c7;">
                         <label class="text-dark small fw-bold d-block mb-1 text-uppercase">
-                            <i class="fa-solid fa-envelope me-2" style="color: #0284c7;"></i>Input Email Pemohon
+                            <i class="fa-solid fa-envelope me-2" style="color: #0284c7;"></i>Input Email Pemohon (Untuk Kirim WA)
                         </label>
                         <p class="text-muted small mb-3">Sistem akan mengarahkan Anda ke WhatsApp untuk mengirim detail permohonan ke nomor <strong>{{ $log->no_hp }}</strong>.</p>
                         
@@ -104,6 +147,12 @@
                             value="{{ $log->email ?? '' }}" 
                             style="border-radius: 10px; border: 1px solid #bae6fd;">
                     </div>
+                </form>
+
+                {{-- FORM PROSES SAJA (TANPA WA) --}}
+                <form method="POST" action="{{ route('admin.permohonan.proses', $log->id) }}" id="formProsesSaja">
+                    @csrf
+                    <input type="hidden" name="proses_saja" value="true">
                 </form>
             </div>
             @endif
@@ -116,17 +165,17 @@
         <button type="button" class="btn btn-secondary btn-sm px-4 rounded-pill fw-bold" data-bs-dismiss="modal">Tutup</button>
         
         @if($log->status == 'pending')
-            {{-- Tombol untuk form pending --}}
+            <button type="submit" form="formProsesSaja" class="btn btn-outline-success btn-sm px-4 rounded-pill fw-bold shadow-sm">
+                <i class="fa-solid fa-check me-2"></i> Proses Saja
+            </button>
             <button type="submit" form="formProsesWA" class="btn btn-primary btn-sm px-4 rounded-pill fw-bold shadow-sm" style="background: #0f766e; border: none;">
                 <i class="fa-brands fa-whatsapp me-2" style="font-size: 16px;"></i> Proses & Kirim WA
             </button>
         @else
-            {{-- FITUR BARU: Tombol Kirim Ulang WA dengan SweetAlert2 --}}
             <form method="POST" action="{{ route('admin.permohonan.proses', $log->id) }}" id="formKirimUlang_{{ $log->id }}" target="_blank">
                 @csrf
                 <input type="hidden" name="email" value="{{ $log->email }}">
                 
-                {{-- Perhatikan perubahan pada type="button" dan tambahan onclick --}}
                 <button type="button" onclick="konfirmasiKirimUlang({{ $log->id }})" class="btn btn-outline-success btn-sm px-4 rounded-pill fw-bold shadow-sm">
                     <i class="fa-brands fa-whatsapp me-2" style="font-size: 16px;"></i> Kirim Ulang WA
                 </button>

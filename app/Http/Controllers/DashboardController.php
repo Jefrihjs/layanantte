@@ -12,8 +12,15 @@ class DashboardController extends Controller
     {
         $tahun = $request->tahun ?? date('Y');
 
-        $baseQuery = TteLog::whereYear('tanggal', $tahun);
+        // Pisahkan query antara Permohonan Reguler dan Lapor Kendala
+        $baseQuery = TteLog::whereYear('tanggal', $tahun)->where('jenis_permohonan', '!=', 'lapor_kendala');
+        $kendalaQuery = TteLog::whereYear('tanggal', $tahun)->where('jenis_permohonan', 'lapor_kendala');
 
+        // ================= STATISTIK KENDALA =================
+        $totalKendala = (clone $kendalaQuery)->count();
+        $kendalaPending = (clone $kendalaQuery)->where('status', 'pending')->count();
+
+        // ================= STATISTIK PERMOHONAN =================
         $total = (clone $baseQuery)->count();
         $pendaftaran = (clone $baseQuery)
             ->where('jenis_permohonan', 'baru')
@@ -28,7 +35,6 @@ class DashboardController extends Controller
             ->count();
 
         // ================= STATUS =================
-
         $pending = (clone $baseQuery)
             ->where('status', 'pending')
             ->count();
@@ -44,7 +50,6 @@ class DashboardController extends Controller
             : 0;
 
         // ================= RATA-RATA WAKTU =================
-
         $avgMinutes = (clone $baseQuery)
             ->where('status', 'diproses')
             ->whereNotNull('diproses_pada')
@@ -67,12 +72,12 @@ class DashboardController extends Controller
 
         for ($bulan = 1; $bulan <= 12; $bulan++) {
 
-            $pendingBulanan = TteLog::whereYear('tanggal', $tahun)
+            $pendingBulanan = (clone $baseQuery)
                 ->whereMonth('tanggal', $bulan)
                 ->where('status', 'pending')
                 ->count();
 
-            $diprosesBulanan = TteLog::whereYear('tanggal', $tahun)
+            $diprosesBulanan = (clone $baseQuery)
                 ->whereMonth('tanggal', $bulan)
                 ->where('status', 'diproses')
                 ->count();
@@ -88,6 +93,8 @@ class DashboardController extends Controller
         $persenBaru = $total > 0 ? round(($pendaftaran / $total) * 100) : 0;
         $persenReset = $total > 0 ? round(($reset / $total) * 100) : 0;
         $persenPerpanjangan = $total > 0 ? round(($perpanjangan / $total) * 100) : 0;
+        
+        // Ambil data terbaru gabungan
         $latest = TteLog::latest()->take(5)->get();
 
         return view('dashboard.index', compact(
@@ -104,7 +111,9 @@ class DashboardController extends Controller
             'diproses',
             'persenSelesai',
             'avgFormatted',
-            'latest'
+            'latest',
+            'totalKendala',      
+            'kendalaPending'     
         ));
 
     }

@@ -21,6 +21,7 @@ class TteLog extends Model
         'no_hp',
         'jenis_permohonan',
         'keterangan',
+        'bukti_kendala',
         'status',
         'email',
         'diproses_oleh',
@@ -36,6 +37,17 @@ class TteLog extends Model
     {
         return $this->belongsTo(\App\Models\UnitKerja::class, 'unit_kerja', 'nama');
     }
+
+    // === TAMBAHKAN FUNGSI RELASI INI DI BAWAH ===
+    /**
+     * Relasi ke dirinya sendiri (TteLog) berdasarkan NIK
+     * Digunakan untuk mengambil riwayat berapa kali pemohon mengajukan layanan
+     */
+    public function riwayatPermohonan()
+    {
+        return $this->hasMany(TteLog::class, 'nik', 'nik');
+    }
+    // =============================================
 
     protected $casts = [
         'tanggal' => 'datetime',

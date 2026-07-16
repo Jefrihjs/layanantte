@@ -60,15 +60,26 @@ class PermohonanController extends Controller
             });
         }
 
-        $data = $query->latest('tanggal')->paginate(10)->withQueryString();
+         $data = $query->with('riwayatPermohonan')->latest('tanggal')->paginate(10)->withQueryString();
 
         return view('permohonan.index', compact('data'));
     }
 
     // ================= FUNGSI BARU UNTUK PROSES & WA =================
-    public function prosesPermohonan(Request $request, $id)
+            public function prosesPermohonan(Request $request, $id)
     {
-        // 1. Validasi input email
+        // 0. CEK APAKAH TOMBOL "PROSES SAJA" YANG DIKLIK
+        if ($request->has('proses_saja')) {
+            $log = TteLog::findOrFail($id);
+            $log->status = 'diproses';
+            $log->diproses_oleh = auth()->id(); 
+            $log->diproses_pada = now();
+            $log->save();
+
+            return redirect()->route('permohonan.index')->with('success', 'Permohonan berhasil diproses tanpa mengirim WhatsApp.');
+        }
+
+        // 1. Validasi input email (Hanya jika kirim WA)
         $request->validate([
             'email' => 'required|email'
         ]);
@@ -79,10 +90,8 @@ class PermohonanController extends Controller
         // 3. Update status permohonan menjadi diproses
         $log->status = 'diproses';
         $log->email = $request->email;
-
         $log->diproses_oleh = auth()->id(); 
         $log->diproses_pada = now();
-
         $log->save();
 
         // 4. Format nomor HP (Ubah 0 di depan menjadi 62)
@@ -92,18 +101,20 @@ class PermohonanController extends Controller
         }
 
         // 5. Tentukan label jenis permohonan
-        $jenis_teks = 'Pendaftaran Baru'; // Default
+        $jenis_teks = 'Pendaftaran Sertifikat Elektronik'; // Default untuk value 'baru'
         if ($log->jenis_permohonan == 'reset_passphrase') {
             $jenis_teks = 'Reset Passphrase';
         } elseif ($log->jenis_permohonan == 'perpanjangan') {
-            $jenis_teks = 'Perpanjangan Sertifikat';
+            $jenis_teks = 'Perpanjangan Sertifikat Elektronik';
+        } elseif ($log->jenis_permohonan == 'penghapusan') {
+            $jenis_teks = 'Penghapusan Sertifikat Elektronik';
+        } elseif ($log->jenis_permohonan == 'lapor_kendala') {
+            $jenis_teks = 'Lapor Kendala TTE';
         }
 
         // 6. Susun isi pesan WhatsApp
         $email = $request->email;
-        $verifikator = auth()->check()
-        ? auth()->user()->name
-        : 'Verifikator TTE';
+        $verifikator = auth()->check() ? auth()->user()->name : 'Verifikator TTE';
 
         $pesan = "Halo Bpk/Ibu {$log->nama}, permohonan *{$jenis_teks}* Anda saat ini sedang diproses.\n\n";
 

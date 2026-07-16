@@ -11,22 +11,33 @@ use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
-| ROUTE PUBLIK
+| ROUTE PUBLIK (MENU UTAMA & PERMOHONAN)
 |--------------------------------------------------------------------------
 */
 
+// 1. Halaman Menu Utama (Pilih: Permohonan atau Lapor Kendala)
 Route::get('/', function () {
-    return redirect('/layanan');
-});
+    return view('public.index');
+})->name('layanan.index');
 
-Route::get('/layanan/check', function () {
-    return redirect()->route('layanan.index');
-});
-
-Route::get('/layanan', [PublicTteController::class, 'index'])->name('layanan.index');
-Route::post('/layanan/check', [PublicTteController::class, 'checkNik'])->name('layanan.check');
+// 2. Rute untuk Permohonan TTE Biasa
+Route::get('/layanan/permohonan', [PublicTteController::class, 'index'])->name('layanan.check');
+Route::post('/layanan/check', [PublicTteController::class, 'checkNik'])->name('layanan.check.post');
 Route::post('/layanan/store', [PublicTteController::class, 'store'])->name('layanan.store');
 
+// Rute untuk Lapor Kendala (Tombol Lapor Kendala TTE)
+Route::get('/lapor-kendala', [PublicTteController::class, 'formKendalaNik'])->name('layanan.kendala');
+Route::post('/lapor-kendala/cek', [PublicTteController::class, 'checkKendalaNik'])->name('layanan.kendala.check.post');
+Route::post('/lapor-kendala/store', [PublicTteController::class, 'storeKendala'])->name('layanan.kendala.store');
+
+// Rute Halaman Statis
+Route::get('/kebijakan-privasi', function () {
+    return view('public.kebijakan_privasi');
+})->name('kebijakan.privasi');
+
+Route::get('/syarat-ketentuan', function () {
+    return view('public.syarat_ketentuan');
+})->name('syarat.ketentuan');
 /*
 |--------------------------------------------------------------------------
 | ROUTE ADMIN (AUTH)
