@@ -26,6 +26,7 @@ class TteLog extends Model
         'email',
         'diproses_oleh',
         'diproses_pada',
+        'bukti_kendala'
     ];
 
     public function admin()

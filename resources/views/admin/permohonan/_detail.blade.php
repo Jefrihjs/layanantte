@@ -160,6 +160,38 @@
         </div>
     </div>
 
+        @if($log->jenis_permohonan == 'lapor_kendala' && $log->bukti_kendala)
+        <div class="col-12 mt-2">
+            <div style="background: #fef2f2; padding: 20px; border-radius: 15px; border-left: 5px solid #dc2626;">
+                <label class="text-muted small fw-bold d-block mb-2 text-uppercase">
+                    <i class="fa-solid fa-image me-2 text-danger"></i>Bukti Kendala
+                </label>
+                
+                @php
+                    // Cek apakah file ini PDF atau Gambar
+                    $extension = pathinfo($log->bukti_kendala, PATHINFO_EXTENSION);
+                @endphp
+
+                @if(in_array($extension, ['jpg', 'jpeg', 'png', 'gif']))
+                    <!-- Jika Gambar, tampilkan thumbnail -->
+                    <a href="{{ asset('storage/bukti_kendala/' . $log->bukti_kendala) }}" target="_blank">
+                        <img src="{{ asset('storage/bukti_kendala/' . $log->bukti_kendala) }}" 
+                            alt="Bukti Kendala" 
+                            class="img-fluid rounded shadow-sm border" 
+                            style="max-height: 200px; width: 100%; object-fit: cover;">
+                    </a>
+                @else
+                    <!-- Jika PDF, tampilkan tombol download/lihat -->
+                    <a href="{{ asset('storage/bukti_kendala/' . $log->bukti_kendala) }}" target="_blank" class="btn btn-danger btn-sm rounded-pill fw-bold">
+                        <i class="fa-solid fa-file-pdf me-1"></i> Lihat Dokumen PDF
+                    </a>
+                @endif
+                
+            </div>
+        </div>
+        @endif
+
+    </div>
     {{-- TOMBOL AKSI DI BAWAH --}}
     <div class="modal-footer border-0 bg-light p-3">
         <button type="button" class="btn btn-secondary btn-sm px-4 rounded-pill fw-bold" data-bs-dismiss="modal">Tutup</button>

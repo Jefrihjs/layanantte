@@ -83,7 +83,7 @@
         </div>
     </div>
 
-     <div class="footer py-8 text-center text-slate-400 text-xs font-medium">
+    <div class="footer py-8 text-center text-slate-400 text-xs font-medium">
         <div class="flex justify-center items-center gap-4 mb-3">
             <a href="{{ route('kebijakan.privasi') }}" class="hover:text-teal-600 transition-colors">Kebijakan Privasi</a>
             <span class="text-slate-300">|</span>
