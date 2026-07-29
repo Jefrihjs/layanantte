@@ -4,6 +4,7 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException; // Tambahkan ini
 
 class Handler extends ExceptionHandler
 {
@@ -25,6 +26,18 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
+        });
+
+        // Tambahkan blok kode ini untuk menangani error akses URL langsung
+        $this->renderable(function (MethodNotAllowedHttpException $e, $request) {
+            // Jika request tersebut mengharapkan balasan JSON (dari AJAX/Fetch)
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Metode tidak diizinkan.'], 405);
+            }
+
+            // Jika dibuka langsung di browser, arahkan kembali ke halaman sebelumnya
+            // atau ke halaman utama jika tidak ada halaman sebelumnya
+            return redirect()->back()->with('error', 'Akses langsung ke halaman ini tidak diizinkan.');
         });
     }
 }
